@@ -6,9 +6,9 @@
 
 require('essentials');
 
-const argv = require('yargs-parser')(process.argv.slice(2), {
-  boolean: ['help'],
-  alias: { help: 'h' },
+const argv = require('../../lib/cli/parse-args')(process.argv.slice(2), {
+  boolean: new Set(['help']),
+  alias: new Map([['h', 'help']]),
 });
 
 const [versionTag] = argv._;
@@ -90,7 +90,7 @@ const chocoPackageTemplatePath = path.join(__dirname, 'choco-package-template');
             metadata.releaseNotes[0] = `https://github.com/serverless/serverless/releases/tag/${versionTag}`;
             metadata.copyright[0] = `${new Date().getFullYear()}, Serverless Inc.`;
             metadata.tags[0] = packageMeta.keywords
-              .filter(keyword => !keyword.includes(' '))
+              .filter((keyword) => !keyword.includes(' '))
               .join(' ');
             metadata.summary[0] = packageMeta.description;
             metadata.description[0] = packageMeta.description;
@@ -102,7 +102,7 @@ const chocoPackageTemplatePath = path.join(__dirname, 'choco-package-template');
       ),
 
       // Download binary into package tools folder
-      fetch(binaryUrl).then(response => {
+      fetch(binaryUrl).then((response) => {
         if (response.status >= 400) {
           throw new Error(`${response.status}: Request to ${binaryUrl} was rejected`);
         }

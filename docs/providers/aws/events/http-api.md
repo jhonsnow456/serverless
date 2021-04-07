@@ -110,7 +110,7 @@ provider:
 
 ### JWT Authorizers
 
-Currently the only way to restrict access to configured HTTP API endpoints is by setting up an JWT Authorizers.
+One of the available ways to restrict access to configured HTTP API endpoints is to use JWT Authorizers.
 
 _For deep details on that follow [AWS documentation](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-jwt-authorizer.html)_
 
@@ -123,6 +123,7 @@ provider:
   httpApi:
     authorizers:
       someJwtAuthorizer:
+        type: jwt
         identitySource: $request.header.Authorization
         issuerUrl: https://cognito-idp.${region}.amazonaws.com/${cognitoPoolId}
         audience:
@@ -145,6 +146,121 @@ functions:
             scopes: # Optional
               - user.id
               - user.email
+```
+
+### Lambda (Request) Authorizers
+
+Another way to restrict access to your HTTP API endpoints is to use a custom Lambda Authorizers.
+
+_For deep details on that follow [AWS documentation](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-lambda-authorizer.html)_
+
+#### Using function from existing service as an authorizer
+
+In order to use function that is a part of your `serverless.yml` service configuration as a custom authorizer, you have to first reference it by name when configuring your authorizer. In the following example, we have a function called `authorizerFunc` that is used to define `customAuthorizer` that is later used by function `hello` to restrict access to its endpoints.
+
+```yaml
+provider:
+  name: aws
+  httpApi:
+    authorizers:
+      customAuthorizer:
+        type: request
+        functionName: authorizerFunc
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - httpApi:
+          method: get
+          path: /hello
+          authorizer:
+            name: customAuthorizer
+
+  authorizerFunc:
+    handler: authorizer.handler
+```
+
+#### Using function defined outside of your service as an authorizer
+
+It is also possible to use an existing Lambda function as a custom authorizer. In order to do that, you have to reference it's ARN when configuring your authorizer. In the following example, `customAuthorizer` references external function and is later used by function `hello` to restrict access to its endpoints.
+
+```yaml
+provider:
+  name: aws
+  httpApi:
+    authorizers:
+      customAuthorizer:
+        type: request
+        functionArn: arn:aws:lambda:us-east-1:11111111111:function:external-authorizer
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - httpApi:
+          method: get
+          path: /hello
+          authorizer:
+            name: customAuthorizer
+```
+
+#### Detailed authorizer configuration
+
+Examples presented above use minimal authorizer configuration. Below you can find all possible configuration options for custom authorizers.
+
+- `type` - Should be set to `request` for custom Lambda authorizers.
+- `name` - Optional. Custom name for created authorizer
+- `functionName` - Name of function defined in the same service to be used as authorizer function. Cannot be defined when `functionArn` is set.
+- `functionArn` - ARN of the function to be used as authorizer function. It accepts CloudFormation intrinsic functions. Cannot be defined when `functionName` is set.
+- `resultTtlInSeconds` - Optional. Time to live for cached authorizer results, accepts values from 0 (no caching) to 3600 (1 hour). When set to non-zero value, `identitySource` must be defined as well.
+- `enableSimpleResponses` - Optional. Flag that specifies if authorizer function will return authorization responses in simple format. Defaults to `false`.
+- `payloadVersion` - Optional. Version of payload that will be sent to authorizer function. Defaults to `'2.0'`.
+- `identitySource` - Optional. One or more mapping expressions of the request parameters in form of e.g `$request.header.Auth`. Specified values are verified to be non-empty and not null by authorizer. It is a required property when `resultTtlInSeconds` is non-zero as `identitySource` is additionally used as cache key for authorizer responses caching.
+- `managedExternally` - Optional. Flag that specifies if the authorizer function is fully managed externally (e.g. exists in another AWS account). When that flag is set to `true`, creation of permission resource for the authorizer function will be skipped.
+
+Below you can find configuration example with example values set.
+
+```yaml
+provider:
+  name: aws
+  httpApi:
+    authorizers:
+      customAuthorizer:
+        type: request
+        functionName: authorizerFunc # Mutually exclusive with `functionArn`
+        functionArn: arn:aws:lambda:us-east-1:11111111111:function:external-authorizer # Mutually exclusive with `functionName`
+        name: customAuthorizerName
+        resultTtlInSeconds: 300
+        enableSimpleResponses: true
+        payloadVersion: '2.0'
+        identitySource:
+          - $request.header.Auth
+          - $request.header.Authorization
+        managedExternally: true # Applicable only when using externally defined authorizer functions to prevent creation of permission resource
+```
+
+### AWS IAM Authorization
+
+It is also possible to secure your HTTP API endpoints by taking advantage of AWS IAM Policies.
+
+_For deep details on that follow [AWS documentation](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-control-access-using-iam-policies-to-invoke-api.html)_
+
+In order to do that, you need to set `authorizer` with `type: aws_iam` on `httpApi` event, as seen on the example below:
+
+```yaml
+provider:
+  name: aws
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - httpApi:
+          method: get
+          path: /hello
+          authorizer:
+            type: aws_iam
 ```
 
 ### Access logs
@@ -193,11 +309,20 @@ provider:
     id: xxxx # id of externally created HTTP API to which endpoints should be attached.
 ```
 
+You can use AWS Fn::ImportValue function as well to reference an HTTP API created within another Cloud Formation stack and whose id is exported.
+
+```yaml
+provider:
+  httpApi:
+    id:
+      Fn::ImportValue: xxxx # name of the exported value representing the external HTTP API id
+```
+
 In such case no API and stage resources are created, therefore extending HTTP API with CORS, access logs settings or authorizers is not supported.
 
 ## Shared Authorizer
 
-For external HTTP API you can use shared authorizer in similar manner to RestApi. Example configuration could look like:
+For external HTTP API you can use shared authorizer in similar manner to RestApi. When using shared Lambda custom authorizer, you need to set `type` to `request`. Example configuration could look like:
 
 ```yml
 httpApi:
@@ -211,6 +336,8 @@ functions:
           path: /users
           ...
           authorizer:
+            # Type of referenced authorizer
+            type: jwt
             # Provide authorizerId
             id:
               Ref: ApiGatewayAuthorizer  # or hard-code Authorizer ID
@@ -224,6 +351,8 @@ functions:
           path: /users/{userId}
           ...
           authorizer:
+            # Type of referenced authorizer
+            type: jwt
             # Provide authorizerId
             id:
               Ref: ApiGatewayAuthorizer  # or hard-code Authorizer ID
@@ -255,11 +384,38 @@ resources:
 ### Event / payload format
 
 HTTP API offers only a 'proxy' option for Lambda integration where an event submitted to the function contains the details of HTTP request such as headers, query string parameters etc.
-There are however two formats for this event (see [Working with AWS Lambda proxy integrations for HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html)) where the default one (1.0) is the same as for REST API / Lambda proxy integration which makes it easy to migrate from REST API to HTTP API.
-The payload version could be configured globally as:
+There are two formats for this event available (see [Working with AWS Lambda proxy integrations for HTTP APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html)), with the default being 2.0. It is possible to downgrade to 1.0 version by specifying `payload`. The payload version could be configured globally as:
 
 ```yaml
 provider:
   httpApi:
-    payload: '2.0'
+    payload: '1.0'
 ```
+
+### Detailed Metrics
+
+With HTTP API we may configure detailed metrics that can be used setup monitoring and alerting in Cloudwatch.
+
+Detailed Metrics can be turned on with:
+
+```yaml
+provider:
+  httpApi:
+    metrics: true
+```
+
+### Tags
+
+When using HTTP API, it is possible to tag the corresponding API Gateway. By setting `provider.httpApi.useProviderTags` to `true`, all tags defined on `provider.tags` will be applied to API Gateway.
+
+```yaml
+provider:
+  tags:
+    project: myProject
+  httpApi:
+    useProviderTags: true
+```
+
+In the above example, the tag project: myProject will be applied to API Gateway.
+
+_Note: If the API Gateway has any existing tags applied outside of Serverless Framework, they will be removed during deployment._

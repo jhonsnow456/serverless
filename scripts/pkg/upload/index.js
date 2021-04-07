@@ -6,9 +6,9 @@
 
 require('essentials');
 
-const argv = require('yargs-parser')(process.argv.slice(2), {
-  boolean: ['help'],
-  alias: { help: 'h' },
+const argv = require('../../../lib/cli/parse-args')(process.argv.slice(2), {
+  boolean: new Set(['help', 'legacy']),
+  alias: new Map([['h', 'help']]),
 });
 
 const [versionTag] = argv._;
@@ -40,5 +40,5 @@ if (!/^v\d+\.\d+\.\d+$/.test(versionTag)) {
   return;
 }
 
-require('./world')(versionTag);
-require('./china')(versionTag);
+require('./world')(versionTag, { isLegacyVersion: argv.legacy });
+require('./china')(versionTag, { isLegacyVersion: argv.legacy });

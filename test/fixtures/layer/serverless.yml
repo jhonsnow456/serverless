@@ -1,0 +1,18 @@
+service: service
+
+configValidationMode: error
+frameworkVersion: '*'
+
+provider:
+  name: aws
+  lambdaHashingVersion: 20201221
+
+functions:
+  function:
+    handler: index.handler
+    layers:
+      - { Ref: LayerLambdaLayer }
+
+layers:
+  layer:
+    path: layer

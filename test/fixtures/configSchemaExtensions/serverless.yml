@@ -10,12 +10,15 @@ plugins:
   - ./test-plugin
 
 configValidationMode: error
+frameworkVersion: '*'
 
 custom:
   someCustomStringProp: can-be-string
 
 functions:
   someFunction:
+    someFunctionStringProp: function-string-prop
+    someRequiredFunctionNumberProp: 321
     events:
       - someEvent:
           someRequiredStringProp: some string

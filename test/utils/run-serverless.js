@@ -1,8 +1,8 @@
 'use strict';
 
 const path = require('path');
-const runServerless = require('@serverless/test/run-serverless');
 
-const serverlessPath = path.join(__dirname, '../../');
-
-module.exports = options => runServerless(serverlessPath, options);
+module.exports = require('@serverless/test/setup-run-serverless-fixtures-engine')({
+  fixturesDir: path.resolve(__dirname, '../fixtures'),
+  serverlessDir: path.resolve(__dirname, '../../'),
+});

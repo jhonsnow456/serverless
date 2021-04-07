@@ -1,10 +1,12 @@
 service: service
 
 configValidationMode: error
+frameworkVersion: '*'
 
 provider:
   name: aws
   logRetentionInDays: 14
+  lambdaHashingVersion: 20201221
 
 functions:
   foo:
@@ -24,3 +26,9 @@ functions:
       - httpApi:
           method: get
           path: /bar/{marko}
+
+  simpleCustomAuthorizer:
+    handler: authorizers.simpleAuthorizer
+
+  standardCustomAuthorizer:
+    handler: authorizers.standardAuthorizer

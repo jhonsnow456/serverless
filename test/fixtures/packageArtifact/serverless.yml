@@ -1,9 +1,11 @@
 service: service
 
 configValidationMode: error
+frameworkVersion: '*'
 
 provider:
   name: aws
+  lambdaHashingVersion: 20201221
 
 package:
   artifact: artifact.zip
@@ -13,3 +15,5 @@ functions:
     handler: index.handler
   other:
     handler: index.handler
+    package:
+      artifact: artifact-function.zip

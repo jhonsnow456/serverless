@@ -18,6 +18,9 @@ Variables allow users to dynamically replace config values in `serverless.yml` c
 
 They are especially useful when providing secrets for your service to use and when you are working with multiple stages.
 
+If `unresolvedVariablesNotificationMode` is set to `error`, references to variables that cannot be resolved will result in an error being thrown.
+This will become the default behaviour in the next major version.
+
 ## Syntax
 
 To use variables, you will need to reference values enclosed in `${}` brackets.
@@ -59,23 +62,22 @@ For example:
 ```yml
 provider:
   name: aws
-  stage: ${opt:stage, 'dev'}
   environment:
-    MY_SECRET: ${file(./config.${opt:stage, self:provider.stage, 'dev'}.json):CREDS}
+    MY_SECRET: ${file(./config.${opt:stage, 'dev'}.json):CREDS}
 ```
 
-If `sls deploy --stage qa` is run, the option `stage=qa` is used inside the `${file(./config.${opt:stage, self:provider.stage, 'dev'}.json):CREDS}` variable and it will resolve the `config.qa.json` file and use the `CREDS` key defined.
+If `sls deploy --stage qa` is run, the option `stage=qa` is used inside the `${file(./config.${opt:stage, 'dev'}.json):CREDS}` variable and it will resolve the `config.qa.json` file and use the `CREDS` key defined.
 
 **How that works:**
 
 1. stage is set to `qa` from the option supplied to the `sls deploy --stage qa` command
-2. `${opt:stage, self:provider.stage, 'dev'}` resolves to `qa` and is used in `${file(./config.${opt:stage, self:provider.stage, 'dev'}.json):CREDS}`
+2. `${opt:stage, 'dev'}` resolves to `qa` and is used in `${file(./config.${opt:stage, 'dev'}.json):CREDS}`
 3. `${file(./config.qa.json):CREDS}` is found & the `CREDS` value is read
 4. `MY_SECRET` value is set
 
 Likewise, if `sls deploy --stage prod` is run the `config.prod.json` file would be found and used.
 
-If no `--stage` flag is provided, the second parameter defined in `${opt:stage, 'dev'}` a.k.a `dev` will be used and result in `${file(./config.dev.json):CREDS}`.
+If no `--stage` flag is provided, the fallback `dev` will be used and result in `${file(./config.dev.json):CREDS}`.
 
 ## Reference Properties In serverless.yml
 
@@ -217,17 +219,17 @@ resources:
         Name: memorySize
 ```
 
-You can also reference CloudFormation stack in another regions with the `cf.REGION:stackName.outputKey` syntax. For example:
+You can also reference CloudFormation stack in another regions with the `cf(REGION):stackName.outputKey` syntax. For example:
 
 ```yml
 service: new-service
 provider: aws
 functions:
   hello:
-    name: ${cf.us-west-2:another-service-dev.functionPrefix}-hello
+    name: ${cf(us-west-2):another-service-dev.functionPrefix}-hello
     handler: handler.hello
   world:
-    name: ${cf.ap-northeast-1:another-stack.functionPrefix}-world
+    name: ${cf(ap-northeast-1):another-stack.functionPrefix}-world
     handler: handler.world
 ```
 
@@ -283,59 +285,42 @@ functions:
 
 In the above example, the value for the SSM Parameters will be looked up and used to populate the variables.
 
-You can also reference encrypted SSM Parameters, of type SecureString, using the extended syntax, `ssm:/path/to/secureparam~true`.
+You can also reference SSM Parameters in another region with the `ssm(REGION):/path/to/param` syntax. For example:
 
 ```yml
-service: new-service
-provider: aws
-functions:
-  hello:
-    name: hello
-    handler: handler.hello
-custom:
-  supersecret: ${ssm:/path/to/secureparam~true}
-```
-
-In this example, the serverless variable will contain the decrypted value of the SecureString.
-
-For StringList type parameters, you can optionally split the resolved variable into an array using the extended syntax, `ssm:/path/to/stringlistparam~split`.
-
-```yml
-service: new-service
-provider: aws
-functions:
-  hello:
-    name: hello
-    handler: handler.hello
-custom:
-  myArrayVar: ${ssm:/path/to/stringlistparam~split}
-```
-
-You can also reference SSM Parameters in another region with the `ssm.REGION:/path/to/param` syntax. For example:
-
-```yml
-service: ${ssm.us-west-2:/path/to/service/id}-service
+service: ${ssm(us-west-2):/path/to/service/id}-service
 provider:
   name: aws
 functions:
   hello:
-    name: ${ssm.ap-northeast-1:/path/to/service/myParam}-hello
+    name: ${ssm(ap-northeast-1):/path/to/service/myParam}-hello
     handler: handler.hello
 ```
 
-## Reference Variables using AWS Secrets Manager
+### Resolution of non plain string types
 
-Variables in [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/) can be referenced [using SSM](https://docs.aws.amazon.com/systems-manager/latest/userguide/integration-ps-secretsmanager.html). Use the `ssm:/aws/reference/secretsmanager/secret_ID_in_Secrets_Manager~true` syntax(note `~true` as secrets are always encrypted). For example:
+New variable resolver, ensures that automatically other types as `SecureString` and `StringList` are resolved into expected forms.
+
+For that please ensure to add `variablesResolutionMode: 20210326` to your service configuration.
+
+#### Auto decrypting of `SecureString` type parameters.
+
+All `SecureString` type parameters are automatically decrypted, and automatically parsed if they export stringified JSON content (Note: you can turn off parsing by passing `raw` instruction into variable as: `${ssm(raw):/path/to/secureparam}`, if you need to also pass custom region, put it first as: `${ssm(eu-west-1, raw):/path/to/secureparam}`)
+
+Variables in [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/) can be referenced [using SSM](https://docs.aws.amazon.com/systems-manager/latest/userguide/integration-ps-secretsmanager.html), just use the `ssm:/aws/reference/secretsmanager/secret_ID_in_Secrets_Manager` syntax. For example:
 
 ```yml
 service: new-service
+variablesResolutionMode: 20210326
 provider: aws
 functions:
   hello:
     name: hello
     handler: handler.hello
 custom:
-  supersecret: ${ssm:/aws/reference/secretsmanager/secret_ID_in_Secrets_Manager~true}
+  secret: ${ssm:/path/to/secureparam}
+  # AWS Secrets manager parameter
+  supersecret: ${ssm:/aws/reference/secretsmanager/secret_ID_in_Secrets_Manager}
 ```
 
 In this example, the serverless variable will contain the decrypted value of the secret.
@@ -356,6 +341,7 @@ variables will be resolved like
 
 ```yml
 service: new-service
+variablesResolutionMode: 20210326
 provider: aws
 functions:
   hello:
@@ -368,6 +354,22 @@ custom:
     arr:
       - true
       - false
+```
+
+#### Resolve `StringList` as array of strings
+
+Same `StringList` type parameters are automatically detected and resolved to array form. (Note: you can turn off resolution to array by passing `raw` instruction into variable as: `${ssm(raw):/path/to/stringlistparam}`, if you need to also pass custom region, put it first as: `${ssm(eu-west-1, raw):/path/to/stringlistparam}`)
+
+```yml
+service: new-service
+variablesResolutionMode: 20210326
+provider: aws
+functions:
+  hello:
+    name: hello
+    handler: handler.hello
+custom:
+  myArrayVar: ${ssm:/path/to/stringlistparam}
 ```
 
 ## Reference Variables in Other Files
@@ -439,21 +441,60 @@ functions:
 
 ## Reference Variables in Javascript Files
 
-You can reference JavaScript files to add dynamic data into your variables.
+You can reference JavaScript modules to add dynamic data into your variables.
 
-References can be either named or unnamed exports. To use the exported `someModule` in `myFile.js` you'd use the following code `${file(./myFile.js):someModule}`. For an unnamed export you'd write `${file(./myFile.js)}`. If you export a function, the first argument will be a reference to the Serverless object, containing your configuration.
+### Exporting an object
 
-Here are some examples:
+To rely on exported `someModule` property in `myFile.js` you'd use the following code `${file(./myFile.js):someModule}`)
+
+e.g.
 
 ```js
 // scheduleConfig.js
 module.exports.rate = 'rate(10 minutes)';
 ```
 
+```yml
+# serverless.yml
+service: new-service
+provider: aws
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - schedule: ${file(./scheduleConfig.js):rate} # Reference a specific module
+```
+
+### Exporting a function
+
+With a new variables resolver (_which will be the only used resolver in v3 of a Framework, and which can be turned on now by setting `variablesResolutionMode: 20210326` in service config_) functions receives an object, with two properties:
+
+- `options` - An object referencing resolved CLI params as passed to the command
+- `resolveConfigurationProperty([key1, key2, ...keyN])` - Async function which resolves specific service configuration property. It returns a fully resolved value of configuration property. If circular reference is detected resolution will be rejected.
+
+Example, of how to obtain a value of AWS region that will be used by Serverless Framework:
+
 ```js
-// config.js
-module.exports = serverless => {
-  serverless.cli.consoleLog('You can access Serverless config and methods as well!');
+// config.js (when relying on new variables resolver)
+module.exports = async ({ options, resolveConfigurationProperty }) => {
+  let region = options.region;
+  if (!region) {
+    region = await resolveConfigurationProperty(['provider', 'region']);
+    if (!region) region = 'us-east-1'; // Framework default
+  }
+  ...
+}
+```
+
+In the old legacy resolver (which is deprecated, but stays as default in v2) function receives a reference to the Serverless object containing your configuration.
+
+_**Notice:** Configuration is yet in unresolved state, so any properties configured with variables may still be presented with variables in it_
+
+```js
+// config.js (when relying on legacy resolver)
+module.exports = (serverless) => {
+  serverless.cli.consoleLog('You can access Serverless config at serverless.configrationInput');
 
   return {
     property1: 'some value',
@@ -468,12 +509,6 @@ service: new-service
 provider: aws
 
 custom: ${file(./config.js)}
-
-functions:
-  hello:
-    handler: handler.hello
-    events:
-      - schedule: ${file(./scheduleConfig.js):rate} # Reference a specific module
 ```
 
 You can also return an object and reference a specific property. Just make sure you are returning a valid object and referencing a valid property:
@@ -624,55 +659,6 @@ What this says is to use the `stage` CLI option if it exists, if not, use the de
 
 You can have as many variable references as you want, from any source you want, and each of them can be of different type and different name.
 
-## Using Custom Variable Syntax
-
-In some cases, the `${xxx}` variable syntax conflicts with some CloudFormation functionality. In that case you can provide a custom syntax to overwrite our default `${xxx}` syntax by setting the `provider.variableSyntax` property to the desired regex:
-
-```yml
-service: new-service
-
-provider:
-  name: aws
-  runtime: nodejs12.x
-  variableSyntax: "\\${{([ ~:a-zA-Z0-9._@\\'\",\\-\\/\\(\\)]+?)}}" # notice the double quotes for yaml to ignore the escape characters!
-#  variableSyntax: "\\${((?!AWS)[ ~:a-zA-Z0-9._@'\",\\-\\/\\(\\)]+?)}" # Use this for allowing CloudFormation Pseudo-Parameters in your serverless.yml -- e.g. ${AWS::Region}. All other Serverless variables work as usual.
-
-custom:
-  myStage: ${{opt:stage}}
-```
-
-In this example, we're overwriting the default regex for our variable syntax. So whenever you define variables, you now need to use `${{}}` instead of `${}` (double curly brackets).
-
-## Migrating serverless.env.yml
-
-Previously we used the `serverless.env.yml` file to track Serverless Variables. It was a completely different system with different concepts. To migrate your variables from `serverless.env.yml`, you'll need to decide where you want to store your variables.
-
-**Using a config file:** You can still use `serverless.env.yml`, but the difference now is that you can structure the file however you want, and you'll need to reference each variable/property correctly in `serverless.yml`. For more info, you can check the file reference section above.
-
-**Using the same `serverless.yml` file:** You can store your variables in `serverless.yml` if they don't contain sensitive data, and then reference them elsewhere in the file using `self:someProperty`. For more info, you can check the self reference section above.
-
-**Using environment variables:** You can instead store your variables in environment variables and reference them with `env.someEnvVar`. For more info, you can check the environment variable reference section above.
-
-**Making your variables stage/region specific:** `serverless.env.yml` allowed you to have different values for the same variable based on the stage/region you're deploying to. You can achieve the same result by using the nesting functionality of the new variable system. For example, if you have two different ARNs, one for `dev` stage and the other for `prod` stage, you can do the following: `${env:${opt:stage}_arn}`. This will make sure the correct env var is referenced based on the stage provided as an option. Of course you'll need to export both `dev_arn` and `prod_arn` env vars on your local system.
-
-Now you don't need `serverless.env.yml` at all, but you can still use it if you want. It's just not required anymore. Migrating to the new variable system is easy and you just need to know how the new system works and make small adjustments to how you store & reference your variables.
-
-## Pseudo Parameters Reference
-
-You can reference [AWS Pseudo Parameters](http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html)
-
-Here's an example:
-
-```yml
-Resources:
-  - 'Fn::Join':
-      - ':'
-      - - 'arn:aws:logs'
-        - Ref: 'AWS::Region'
-        - Ref: 'AWS::AccountId'
-        - 'log-group:/aws/lambda/*:*:*'
-```
-
 ## Read String Variable Values as Boolean Values
 
 In some cases, a parameter expect a `true` or `false` boolean value. If you are using a variable to define the value, it may return as a string (e.g. when using SSM variables) and thus return a `"true"` or `"false"` string value.
@@ -696,3 +682,12 @@ ${strToBool(2)} => Error
 ${strToBool(null)} => Error
 ${strToBool(anything)} => Error
 ```
+
+## AWS CloudFormation Pseudo Parameters and Intrinsic functions
+
+[AWS Pseudo Parameters](http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html)
+can be used in values which are passed through as is to CloudFormation template properties.
+
+Otherwise Serverless Framework has no implied understanding of them and does not try to resolve them on its own.
+
+Same handling applies to [CloudFormation Intrinsic functions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html)

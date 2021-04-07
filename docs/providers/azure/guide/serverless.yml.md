@@ -20,7 +20,7 @@ Here is a list of all available properties in `serverless.yml` when the provider
 # serverless.yml
 service: azure-nodejs
 
-frameworkVersion: '>=1.0.0 <2.0.0'
+frameworkVersion: '2'
 
 provider:
   name: azure
@@ -28,7 +28,7 @@ provider:
   runtime: nodejs12.x
   prefix: sample # prefix of generated resource name
   subscriptionId: 00000000-0000-0000-0000-000000000000
-  stage: ${opt:stage, 'dev'} # Set the default stage used. Default is dev
+  stage: dev # Default stage to be used
   type: premium # optional, values include 'Developer', 'Standard', 'Premium', 'Basic', 'Consumption'
   armTemplate:
     file: myTemplate.json
@@ -131,14 +131,13 @@ plugins:
 
 # you can add packaging information here
 package:
-  include:
+  patterns:
+    - '!exclude-me.js'
+    - '!exclude-me-dir/**'
+    - '!local.settings.json'
+    - '!.vscode/**'
     - include-me.js
     - include-me-dir/**
-  exclude:
-    - exclude-me.js
-    - exclude-me-dir/**
-    - local.settings.json
-    - .vscode/**
 
 functions:
   hello:

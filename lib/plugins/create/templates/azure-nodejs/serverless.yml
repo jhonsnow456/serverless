@@ -15,7 +15,7 @@ service: azure-nodejs # NOTE: update this with your service name
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
-# frameworkVersion: "=X.X.X"
+frameworkVersion: '2'
 
 provider:
   name: azure
@@ -64,14 +64,13 @@ plugins: # look for additional plugins in the community plugins repo: https://gi
 
 # you can add packaging information here
 package:
-  # include:
-  #   - include-me.js
-  #   - include-me-dir/**
-  exclude:
-    # - exclude-me.js
-    # - exclude-me-dir/**
-    - local.settings.json
-    - .vscode/**
+  patterns:
+    # - '!exclude-me.js'
+    # - '!exclude-me-dir/**'
+    - '!local.settings.json'
+    - '!.vscode/**'
+    # - include-me.js
+    # - include-me-dir/**
 
 functions:
   hello:

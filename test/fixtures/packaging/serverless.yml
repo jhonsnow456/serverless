@@ -1,0 +1,24 @@
+service: service
+
+configValidationMode: error
+frameworkVersion: '*'
+
+provider:
+  name: aws
+  lambdaHashingVersion: 20201221
+
+functions:
+  fnService:
+    handler: index.handler
+  fnIndividual:
+    handler: index.handler
+    package:
+      individually: true
+
+  fnGo:
+    handler: bin/main
+    runtime: go1.x
+
+layers:
+  layer:
+    path: layer

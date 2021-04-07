@@ -31,6 +31,8 @@ serverless invoke [local] --function functionName
 - `--data` or `-d` String data to be passed as an event to your function. By default data is read from standard input.
 - `--raw` Pass data as a raw string even if it is JSON. If not set, JSON data are parsed and passed as an object.
 - `--path` or `-p` The path to a json file with input data to be passed to the invoked function. This path is relative to the root directory of the service.
+- `--contextPath`, The path to a json file holding input context to be passed to the invoked function. This path is relative to the root directory of the service.
+- `--context` String data to be passed as a context to your function. Same like with `--data`, context included in `--contextPath` will overwrite the context you passed with `--context` flag.
 - `--type` or `-t` The type of invocation. Either `RequestResponse`, `Event` or `DryRun`. Default is `RequestResponse`.
 - `--log` or `-l` If set to `true` and invocation type is `RequestResponse`, it will output logging data of the invocation. Default is `false`.
 
@@ -72,6 +74,20 @@ output the result of the invocation in your terminal.
 ```bash
 serverless invoke --function functionName --stage dev --region us-east-1 --data "hello world"
 ```
+
+#### Function invocation with custom context
+
+```bash
+serverless invoke --function functionName --stage dev --region us-east-1 --context "hello world"
+```
+
+#### Function invocation with context passing
+
+```bash
+serverless invoke --function functionName --stage dev --region us-east-1 --contextPath lib/context.json
+```
+
+This example will pass the json context in the `lib/context.json` file (relative to the root of the service) while invoking the specified/deployed function.
 
 #### Function invocation with data from standard input
 
@@ -127,7 +143,7 @@ Currently, `invoke local` only supports the NodeJs and Python runtimes.
 
 ## Resource permissions
 
-Lambda functions assume an _IAM role_ during execution: the framework creates this role, and set all the permission provided in the `iamRoleStatements` section of `serverless.yml`.
+Lambda functions assume an _IAM role_ during execution: the framework creates this role, and set all the permission provided in the `iam.role.statements` section of `serverless.yml`.
 
 Unless you explicitly state otherwise, every call to the AWS SDK inside the lambda function is made using this role (a temporary pair of key / secret is generated and set by AWS as environment variables, `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`).
 

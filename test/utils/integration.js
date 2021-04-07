@@ -6,104 +6,45 @@ const path = require('path');
 const fse = require('fs-extra');
 const spawn = require('child-process-ext/spawn');
 const nodeFetch = require('node-fetch');
+const log = require('log').get('serverless:test');
 const logFetch = require('log').get('fetch');
 const resolveAwsEnv = require('@serverless/test/resolve-aws-env');
-const { getServiceName, wait } = require('./misc');
-const { readYamlFile, writeYamlFile } = require('./fs');
+const { load: loadYaml } = require('js-yaml');
 
-const serverlessExec = require('../serverless-binary');
+const serverlessExec = require('../serverlessBinary');
 
 const env = resolveAwsEnv();
 env.SLS_DEBUG = '1';
 
-async function createTestService(
-  tmpDir,
-  options = {
-    // Either templateName or templateDir have to be provided
-    templateName: null, // Generic template to use (e.g. 'aws-nodejs')
-    templateDir: null, // Path to custom pre-prepared service template
-    filesToAdd: [], // Array of additional files to add to the service directory
-    serverlessConfigHook: null, // Eventual hook that allows to customize serverless config
-  }
-) {
-  const serviceName = getServiceName();
-
-  fse.mkdirsSync(tmpDir);
-
-  if (options.templateName) {
-    // create a new Serverless service
-    await spawn(serverlessExec, ['create', '--template', options.templateName], {
-      cwd: tmpDir,
-      env,
-    });
-  } else if (options.templateDir) {
-    fse.copySync(options.templateDir, tmpDir, { clobber: true, preserveTimestamps: true });
-  } else {
-    throw new Error("Either 'templateName' or 'templateDir' options have to be provided");
-  }
-
-  if (options.filesToAdd && options.filesToAdd.length) {
-    options.filesToAdd.forEach(filePath => {
-      fse.copySync(filePath, tmpDir, { preserveTimestamps: true });
-    });
-  }
-
-  const serverlessFilePath = path.join(tmpDir, 'serverless.yml');
-  const serverlessConfig = readYamlFile(serverlessFilePath);
-  // Ensure unique service name
-  serverlessConfig.service = serviceName;
-  if (options.serverlessConfigHook) options.serverlessConfigHook(serverlessConfig);
-  writeYamlFile(serverlessFilePath, serverlessConfig);
-
-  process.env.TOPIC_1 = `${serviceName}-1`;
-  process.env.TOPIC_2 = `${serviceName}-1`;
-  process.env.BUCKET_1 = `${serviceName}-1`;
-  process.env.BUCKET_2 = `${serviceName}-2`;
-  process.env.COGNITO_USER_POOL_1 = `${serviceName}-1`;
-  process.env.COGNITO_USER_POOL_2 = `${serviceName}-2`;
-
-  return serverlessConfig;
+async function resolveServiceName(cwd) {
+  const configContent = await (async () => {
+    try {
+      return await fse.readFile(path.join(cwd, 'serverless.yml'));
+    } catch (error) {
+      if (error.code === 'ENOENT') return null;
+      throw error;
+    }
+  })();
+  if (!configContent) return null;
+  const configObject = (() => {
+    try {
+      return loadYaml(configContent);
+    } catch (error) {
+      return null;
+    }
+  })();
+  if (!configObject) return null;
+  return configObject.service;
 }
 
 async function deployService(cwd) {
+  log.notice('deploy %s (at %s)', (await resolveServiceName(cwd)) || '[unknown]', cwd);
   return spawn(serverlessExec, ['deploy'], { cwd, env });
 }
 
 async function removeService(cwd) {
+  log.notice('remove %s (at %s)', (await resolveServiceName(cwd)) || '[unknown]', cwd);
   return spawn(serverlessExec, ['remove'], { cwd, env });
-}
-
-async function getFunctionLogs(cwd, functionName) {
-  let logs;
-  try {
-    ({ stdoutBuffer: logs } = await spawn(
-      serverlessExec,
-      ['logs', '--function', functionName, '--noGreeting', 'true'],
-      {
-        cwd,
-        env,
-      }
-    ));
-  } catch (_) {
-    // Attempting to read logs before first invocation will will result in a "No existing streams for the function" error
-    return null;
-  }
-  return String(logs);
-}
-
-const defaultTimeout = 60000;
-
-async function waitForFunctionLogs(cwd, functionName, startMarker, endMarker, options = {}) {
-  const timeout = options.timeout || defaultTimeout;
-  const startTime = Date.now();
-  await wait(2000);
-  const logs = await getFunctionLogs(cwd, functionName);
-  if (logs && logs.includes(startMarker) && logs.includes(endMarker)) return logs;
-  const timeSpan = Date.now() - startTime;
-  if (timeSpan > timeout) throw new Error('Cannot find function logs');
-  return waitForFunctionLogs(cwd, functionName, startMarker, endMarker, {
-    timeout: timeout - timeSpan,
-  });
 }
 
 let lastRequestId = 0;
@@ -125,17 +66,23 @@ async function fetch(url, options) {
     .clone()
     .buffer()
     .then(
-      buffer => logFetch.debug('[%d] %s', requestId, String(buffer)),
-      error => logFetch.error('[%d] response resolution error: %o', requestId, error)
+      (buffer) => logFetch.debug('[%d] %s', requestId, String(buffer)),
+      (error) => logFetch.error('[%d] response resolution error: %o', requestId, error)
     );
   return response;
 }
 
+function getMarkers(functionName) {
+  return {
+    start: `--- START ${functionName} ---`,
+    end: `--- END ${functionName} ---`,
+  };
+}
+
 module.exports = {
-  createTestService,
   deployService,
   env,
   fetch,
   removeService,
-  waitForFunctionLogs,
+  getMarkers,
 };
