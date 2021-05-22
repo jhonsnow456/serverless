@@ -34,7 +34,7 @@ describe('checkForChanges', () => {
       region: 'us-east-1',
     };
     serverless = new Serverless();
-    serverless.config.servicePath = 'my-service';
+    serverless.serviceDir = 'my-service';
     provider = new AwsProvider(serverless, options);
     serverless.setProvider('aws', provider);
     serverless.service.service = 'my-service';
@@ -291,12 +291,12 @@ describe('checkForChanges', () => {
           awsDeploy.serverless.service.provider.compiledCloudFormationTemplate
         );
         expect(globbySyncStub).to.have.been.calledWithExactly(['**.zip'], {
-          cwd: path.join(awsDeploy.serverless.config.servicePath, '.serverless'),
+          cwd: path.join(awsDeploy.serverless.serviceDir, '.serverless'),
           dot: true,
           silent: true,
         });
         expect(readFileStub).to.have.been.calledWith(
-          path.resolve(awsDeploy.serverless.config.servicePath, '.serverless/my-service.zip')
+          path.resolve(awsDeploy.serverless.serviceDir, '.serverless/my-service.zip')
         );
         expect(awsDeploy.serverless.service.provider.shouldNotDeploy).to.equal(undefined);
       });
@@ -326,12 +326,12 @@ describe('checkForChanges', () => {
           awsDeploy.serverless.service.provider.compiledCloudFormationTemplate
         );
         expect(globbySyncStub).to.have.been.calledWithExactly(['**.zip'], {
-          cwd: path.join(awsDeploy.serverless.config.servicePath, '.serverless'),
+          cwd: path.join(awsDeploy.serverless.serviceDir, '.serverless'),
           dot: true,
           silent: true,
         });
         expect(readFileStub).to.have.been.calledWith(
-          path.resolve(awsDeploy.serverless.config.servicePath, '.serverless/my-service.zip')
+          path.resolve(awsDeploy.serverless.serviceDir, '.serverless/my-service.zip')
         );
         expect(awsDeploy.serverless.service.provider.shouldNotDeploy).to.equal(undefined);
       });
@@ -356,12 +356,12 @@ describe('checkForChanges', () => {
           awsDeploy.serverless.service.provider.compiledCloudFormationTemplate
         );
         expect(globbySyncStub).to.have.been.calledWithExactly(['**.zip'], {
-          cwd: path.join(awsDeploy.serverless.config.servicePath, '.serverless'),
+          cwd: path.join(awsDeploy.serverless.serviceDir, '.serverless'),
           dot: true,
           silent: true,
         });
         expect(readFileStub).to.have.been.calledWith(
-          path.resolve(awsDeploy.serverless.config.servicePath, '.serverless/my-service.zip')
+          path.resolve(awsDeploy.serverless.serviceDir, '.serverless/my-service.zip')
         );
         expect(awsDeploy.serverless.service.provider.shouldNotDeploy).to.equal(undefined);
       });
@@ -388,15 +388,15 @@ describe('checkForChanges', () => {
           awsDeploy.serverless.service.provider.compiledCloudFormationTemplate
         );
         expect(globbySyncStub).to.have.been.calledWithExactly(['**.zip'], {
-          cwd: path.join(awsDeploy.serverless.config.servicePath, '.serverless'),
+          cwd: path.join(awsDeploy.serverless.serviceDir, '.serverless'),
           dot: true,
           silent: true,
         });
         expect(readFileStub).to.have.been.calledWith(
-          path.resolve(awsDeploy.serverless.config.servicePath, '.serverless/func1.zip')
+          path.resolve(awsDeploy.serverless.serviceDir, '.serverless/func1.zip')
         );
         expect(readFileStub).to.have.been.calledWith(
-          path.resolve(awsDeploy.serverless.config.servicePath, '.serverless/func2.zip')
+          path.resolve(awsDeploy.serverless.serviceDir, '.serverless/func2.zip')
         );
         expect(awsDeploy.serverless.service.provider.shouldNotDeploy).to.equal(undefined);
       });
@@ -425,12 +425,12 @@ describe('checkForChanges', () => {
           awsDeploy.serverless.service.provider.compiledCloudFormationTemplate
         );
         expect(globbySyncStub).to.have.been.calledWithExactly(['**.zip'], {
-          cwd: path.join(awsDeploy.serverless.config.servicePath, '.serverless'),
+          cwd: path.join(awsDeploy.serverless.serviceDir, '.serverless'),
           dot: true,
           silent: true,
         });
         expect(readFileStub).to.have.been.calledWith(
-          path.resolve(awsDeploy.serverless.config.servicePath, '.serverless/my-service.zip')
+          path.resolve(awsDeploy.serverless.serviceDir, '.serverless/my-service.zip')
         );
         expect(awsDeploy.serverless.service.provider.shouldNotDeploy).to.equal(undefined);
       });
@@ -455,12 +455,12 @@ describe('checkForChanges', () => {
           awsDeploy.serverless.service.provider.compiledCloudFormationTemplate
         );
         expect(globbySyncStub).to.have.been.calledWithExactly(['**.zip'], {
-          cwd: path.join(awsDeploy.serverless.config.servicePath, '.serverless'),
+          cwd: path.join(awsDeploy.serverless.serviceDir, '.serverless'),
           dot: true,
           silent: true,
         });
         expect(readFileStub).to.have.been.calledWith(
-          path.resolve(awsDeploy.serverless.config.servicePath, '.serverless/my-service.zip')
+          path.resolve(awsDeploy.serverless.serviceDir, '.serverless/my-service.zip')
         );
         expect(awsDeploy.serverless.service.provider.shouldNotDeploy).to.equal(true);
       });
@@ -489,12 +489,12 @@ describe('checkForChanges', () => {
             awsDeploy.serverless.service.provider.compiledCloudFormationTemplate
           );
           expect(globbySyncStub).to.have.been.calledWithExactly(['**.zip'], {
-            cwd: path.join(awsDeploy.serverless.config.servicePath, '.serverless'),
+            cwd: path.join(awsDeploy.serverless.serviceDir, '.serverless'),
             dot: true,
             silent: true,
           });
           expect(readFileStub).to.have.been.calledWith(
-            path.resolve(awsDeploy.serverless.config.servicePath, '.serverless/my-service.zip')
+            path.resolve(awsDeploy.serverless.serviceDir, '.serverless/my-service.zip')
           );
           expect(awsDeploy.serverless.service.provider.shouldNotDeploy).to.equal(true);
         }
@@ -523,15 +523,15 @@ describe('checkForChanges', () => {
           awsDeploy.serverless.service.provider.compiledCloudFormationTemplate
         );
         expect(globbySyncStub).to.have.been.calledWithExactly(['**.zip'], {
-          cwd: path.join(awsDeploy.serverless.config.servicePath, '.serverless'),
+          cwd: path.join(awsDeploy.serverless.serviceDir, '.serverless'),
           dot: true,
           silent: true,
         });
         expect(readFileStub).to.have.been.calledWith(
-          path.resolve(awsDeploy.serverless.config.servicePath, '.serverless/func1.zip')
+          path.resolve(awsDeploy.serverless.serviceDir, '.serverless/func1.zip')
         );
         expect(readFileStub).to.have.been.calledWith(
-          path.resolve(awsDeploy.serverless.config.servicePath, '.serverless/func2.zip')
+          path.resolve(awsDeploy.serverless.serviceDir, '.serverless/func2.zip')
         );
         expect(awsDeploy.serverless.service.provider.shouldNotDeploy).to.equal(true);
       });
@@ -560,12 +560,12 @@ describe('checkForChanges', () => {
           awsDeploy.serverless.service.provider.compiledCloudFormationTemplate
         );
         expect(globbySyncStub).to.have.been.calledWithExactly(['**.zip'], {
-          cwd: path.join(awsDeploy.serverless.config.servicePath, '.serverless'),
+          cwd: path.join(awsDeploy.serverless.serviceDir, '.serverless'),
           dot: true,
           silent: true,
         });
         expect(readFileStub).to.have.been.calledWith(
-          path.resolve(awsDeploy.serverless.config.servicePath, 'foo/bar/my-own.zip')
+          path.resolve(awsDeploy.serverless.serviceDir, 'foo/bar/my-own.zip')
         );
         expect(awsDeploy.serverless.service.provider.shouldNotDeploy).to.equal(undefined);
       });
@@ -577,7 +577,7 @@ describe('checkForChanges #2', () => {
   it('Should recognize package.artifact', () =>
     runServerless({
       fixture: 'packageArtifact',
-      cliArgs: ['deploy'],
+      command: 'deploy',
       env: { AWS_CONTAINER_CREDENTIALS_FULL_URI: 'ignore' },
       lastLifecycleHookName: 'aws:deploy:deploy:checkForChanges',
       awsRequestStubMap: {
@@ -601,8 +601,7 @@ describe('checkForChanges #2', () => {
           listObjectsV2: {
             Contents: [
               {
-                Key:
-                  'serverless/test-package-artifact/dev/1589988704359-2020-05-20T15:31:44.359Z/artifact.zip',
+                Key: 'serverless/test-package-artifact/dev/1589988704359-2020-05-20T15:31:44.359Z/artifact.zip',
                 LastModified: new Date(),
                 ETag: '"5102a4cf710cae6497dba9e61b85d0a4"',
                 Size: 356,
@@ -644,7 +643,7 @@ const commonAwsSdkMock = {
 };
 
 const generateMatchingListObjectsResponse = async (serverless) => {
-  const packagePath = `${serverless.config.servicePath}/.serverless`;
+  const packagePath = `${serverless.serviceDir}/.serverless`;
   const artifactNames = await globby(packagePath, { expandDirectories: { extensions: ['zip'] } });
   artifactNames.push('compiled-cloudformation-template.json');
   return {
@@ -670,7 +669,7 @@ const generateMatchingHeadObjectResponse = async (serverless, { Key: key }) => {
   const fileHash = await (async (fileName) => {
     return new Promise((resolve) => {
       const hash = crypto.createHash('sha256');
-      const f = fs.createReadStream(`${serverless.config.servicePath}/.serverless/${fileName}`);
+      const f = fs.createReadStream(`${serverless.serviceDir}/.serverless/${fileName}`);
       f.on('data', (d) => hash.update(d));
       f.on('close', () => resolve(hash.digest('base64')));
     });
@@ -695,7 +694,7 @@ describe('test/unit/lib/plugins/aws/deploy/lib/checkForChanges.test.js', () => {
     let serverless;
     await runServerless({
       fixture: 'checkForChanges',
-      cliArgs: ['deploy'],
+      command: 'deploy',
       lastLifecycleHookName: 'aws:deploy:deploy:checkForChanges',
       env: { AWS_CONTAINER_CREDENTIALS_FULL_URI: 'ignore' },
       hooks: {
@@ -731,7 +730,8 @@ describe('test/unit/lib/plugins/aws/deploy/lib/checkForChanges.test.js', () => {
     let serverless;
     await runServerless({
       fixture: 'checkForChanges',
-      cliArgs: ['deploy', '--force'],
+      command: 'deploy',
+      options: { force: true },
       lastLifecycleHookName: 'aws:deploy:deploy:checkForChanges',
       env: { AWS_CONTAINER_CREDENTIALS_FULL_URI: 'ignore' },
       hooks: {
@@ -761,7 +761,7 @@ describe('test/unit/lib/plugins/aws/deploy/lib/checkForChanges.test.js', () => {
 
     const { serverless } = await runServerless({
       fixture: 'packageFoldern',
-      cliArgs: ['deploy'],
+      command: 'deploy',
       lastLifecycleHookName: 'aws:deploy:deploy:checkForChanges',
       env: { AWS_CONTAINER_CREDENTIALS_FULL_URI: 'ignore' },
       awsRequestStubMap: {
@@ -787,7 +787,7 @@ describe('test/unit/lib/plugins/aws/deploy/lib/checkForChanges.test.js', () => {
     let serverless;
     await runServerless({
       fixture: 'checkForChanges',
-      cliArgs: ['deploy'],
+      command: 'deploy',
       lastLifecycleHookName: 'aws:deploy:deploy:checkForChanges',
       env: { AWS_CONTAINER_CREDENTIALS_FULL_URI: 'ignore' },
       hooks: {
@@ -818,7 +818,7 @@ describe('test/unit/lib/plugins/aws/deploy/lib/checkForChanges.test.js', () => {
     let serverless;
     await runServerless({
       fixture: 'checkForChanges',
-      cliArgs: ['deploy'],
+      command: 'deploy',
       lastLifecycleHookName: 'aws:deploy:deploy:checkForChanges',
       env: { AWS_CONTAINER_CREDENTIALS_FULL_URI: 'ignore' },
       hooks: {
@@ -845,10 +845,10 @@ describe('test/unit/lib/plugins/aws/deploy/lib/checkForChanges.test.js', () => {
     // https://github.com/serverless/serverless/blob/11fb14115ea47d53a61fa666a94e60d585fb3a4d/test/unit/lib/plugins/aws/deploy/lib/checkForChanges.test.js#L317-L350
 
     const {
-      fixtureData: { updateConfig, servicePath },
+      fixtureData: { updateConfig, servicePath: serviceDir },
     } = await runServerless({
       fixture: 'checkForChanges',
-      cliArgs: ['package'],
+      command: 'package',
     });
 
     const listObjectsV2Response = await generateMatchingListObjectsResponse(serverless);
@@ -856,8 +856,8 @@ describe('test/unit/lib/plugins/aws/deploy/lib/checkForChanges.test.js', () => {
 
     let serverless;
     await runServerless({
-      cwd: servicePath,
-      cliArgs: ['package'],
+      cwd: serviceDir,
+      command: 'package',
       lastLifecycleHookName: 'aws:deploy:deploy:checkForChanges',
       env: { AWS_CONTAINER_CREDENTIALS_FULL_URI: 'ignore' },
       hooks: {
@@ -886,7 +886,7 @@ describe('test/unit/lib/plugins/aws/deploy/lib/checkForChanges.test.js', () => {
     let serverless;
     await runServerless({
       fixture: 'checkForChanges',
-      cliArgs: ['deploy'],
+      command: 'deploy',
       lastLifecycleHookName: 'aws:deploy:deploy:checkForChanges',
       env: { AWS_CONTAINER_CREDENTIALS_FULL_URI: 'ignore' },
       hooks: {
@@ -915,7 +915,7 @@ describe('test/unit/lib/plugins/aws/deploy/lib/checkForChanges.test.js', () => {
     let serverless;
     await runServerless({
       fixture: 'checkForChanges',
-      cliArgs: ['deploy'],
+      command: 'deploy',
       configExt: {
         package: { individually: true },
       },
@@ -948,7 +948,7 @@ describe('test/unit/lib/plugins/aws/deploy/lib/checkForChanges.test.js', () => {
     let serverless;
     await runServerless({
       fixture: 'checkForChanges',
-      cliArgs: ['deploy'],
+      command: 'deploy',
       configExt: {
         package: { individually: true },
       },
@@ -982,7 +982,7 @@ describe('test/unit/lib/plugins/aws/deploy/lib/checkForChanges.test.js', () => {
     let serverless;
     await runServerless({
       fixture: 'checkForChanges',
-      cliArgs: ['deploy'],
+      command: 'deploy',
       configExt: {
         package: { artifact: 'artifact.zip' },
       },
@@ -1013,7 +1013,7 @@ describe('test/unit/lib/plugins/aws/deploy/lib/checkForChanges.test.js', () => {
 
     const { serverless } = await runServerless({
       fixture: 'packageArtifactInServerlessDir',
-      cliArgs: ['deploy'],
+      command: 'deploy',
       configExt: {
         // runServerless by default makes this: `test-${fixtureName}-${TIME_BASED_HASH}`
         // for safety of concurrent test runs. Unfortunately this will make our
@@ -1040,18 +1040,16 @@ describe('test/unit/lib/plugins/aws/deploy/lib/checkForChanges.test.js', () => {
             headObjectStub
               .withArgs({
                 Bucket: 'deployment-bucket',
-                Key:
-                  'serverless/test-package-artifact/dev/1589988704359-2020-05-20T15:31:44.359Z/compiled-cloudformation-template.json',
+                Key: 'serverless/test-package-artifact/dev/1589988704359-2020-05-20T15:31:44.359Z/compiled-cloudformation-template.json',
               })
               .returns({
-                Metadata: { filesha256: 'Pa14GST706iFrSIacw7FepUBMx+tYEs7VVv4YYY6wPs=' },
+                Metadata: { filesha256: 'pZOdrt6qijT7ITsLQjPP9QwgMAfKA2RuUUSTW+l8wWs=' },
               });
 
             headObjectStub
               .withArgs({
                 Bucket: 'deployment-bucket',
-                Key:
-                  'serverless/test-package-artifact/dev/1589988704359-2020-05-20T15:31:44.359Z/my-own.zip',
+                Key: 'serverless/test-package-artifact/dev/1589988704359-2020-05-20T15:31:44.359Z/my-own.zip',
               })
               .returns({
                 Metadata: { filesha256: 'T0qEYHOE4Xv2E8Ar03xGogAlElcdf/dQh/lh9ao7Glo=' },
@@ -1062,16 +1060,14 @@ describe('test/unit/lib/plugins/aws/deploy/lib/checkForChanges.test.js', () => {
           listObjectsV2: {
             Contents: [
               {
-                Key:
-                  'serverless/test-package-artifact/dev/1589988704359-2020-05-20T15:31:44.359Z/compiled-cloudformation-template.json',
+                Key: 'serverless/test-package-artifact/dev/1589988704359-2020-05-20T15:31:44.359Z/compiled-cloudformation-template.json',
                 LastModified: new Date(),
                 ETag: '"5102a4cf710cae6497dba9e61b85d0a4"',
                 Size: 356,
                 StorageClass: 'STANDARD',
               },
               {
-                Key:
-                  'serverless/test-package-artifact/dev/1589988704359-2020-05-20T15:31:44.359Z/my-own.zip',
+                Key: 'serverless/test-package-artifact/dev/1589988704359-2020-05-20T15:31:44.359Z/my-own.zip',
                 LastModified: new Date(),
                 ETag: '"5102a4cf710cae6497dba9e61b85d0a4"',
                 Size: 356,
@@ -1088,7 +1084,7 @@ describe('test/unit/lib/plugins/aws/deploy/lib/checkForChanges.test.js', () => {
   it('should print a warning if missing lambda:GetFunction permission', async () => {
     const { stdoutData } = await runServerless({
       fixture: 'checkForChanges',
-      cliArgs: ['deploy'],
+      command: 'deploy',
       lastLifecycleHookName: 'aws:deploy:deploy:checkForChanges',
       awsRequestStubMap: {
         ...commonAwsSdkMock,
@@ -1115,7 +1111,7 @@ describe('test/unit/lib/plugins/aws/deploy/lib/checkForChanges.test.js', () => {
     return expect(
       runServerless({
         fixture: 'checkForChanges',
-        cliArgs: ['deploy'],
+        command: 'deploy',
         lastLifecycleHookName: 'aws:deploy:deploy:checkForChanges',
         env: { AWS_CONTAINER_CREDENTIALS_FULL_URI: 'ignore' },
         awsRequestStubMap: {
@@ -1139,7 +1135,7 @@ describe('test/unit/lib/plugins/aws/deploy/lib/checkForChanges.test.js', () => {
     return expect(
       runServerless({
         fixture: 'checkForChanges',
-        cliArgs: ['deploy'],
+        command: 'deploy',
         lastLifecycleHookName: 'aws:deploy:deploy:checkForChanges',
         env: { AWS_CONTAINER_CREDENTIALS_FULL_URI: 'ignore' },
         awsRequestStubMap: {
@@ -1162,7 +1158,7 @@ describe('test/unit/lib/plugins/aws/deploy/lib/checkForChanges.test.js', () => {
       let serverless;
       await runServerless({
         fixture: 'checkForChanges',
-        cliArgs: ['deploy'],
+        command: 'deploy',
         configExt: {
           functions: { fn1: { events: [{ cloudwatchLog: 'someLogGroupName' }] } },
         },
@@ -1210,7 +1206,7 @@ describe('test/unit/lib/plugins/aws/deploy/lib/checkForChanges.test.js', () => {
       let serverless;
       await runServerless({
         fixture: 'checkForChanges',
-        cliArgs: ['deploy'],
+        command: 'deploy',
         configExt: {
           functions: { fn1: { events: [{ cloudwatchLog: 'someLogGroupName' }] } },
         },
@@ -1258,7 +1254,7 @@ describe('test/unit/lib/plugins/aws/deploy/lib/checkForChanges.test.js', () => {
       let serverless;
       const { awsNaming } = await runServerless({
         fixture: 'checkForChanges',
-        cliArgs: ['deploy'],
+        command: 'deploy',
         configExt: {
           functions: {
             fn1: {
@@ -1339,7 +1335,7 @@ describe('test/unit/lib/plugins/aws/deploy/lib/checkForChanges.test.js', () => {
       let serverless;
       await runServerless({
         fixture: 'checkForChanges',
-        cliArgs: ['deploy'],
+        command: 'deploy',
         configExt: {
           functions: { fn1: { events: [{ cloudwatchLog: 'someLogGroupName' }] } },
         },

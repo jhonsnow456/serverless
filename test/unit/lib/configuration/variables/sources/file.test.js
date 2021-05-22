@@ -8,7 +8,7 @@ const resolve = require('../../../../../../lib/configuration/variables/resolve')
 const fileSource = require('../../../../../../lib/configuration/variables/sources/file');
 
 describe('test/unit/lib/configuration/variables/sources/file.test.js', () => {
-  const servicePath = path.resolve(__dirname, 'fixture');
+  const serviceDir = path.resolve(__dirname, 'fixture');
   let configuration;
   let variablesMeta;
   before(async () => {
@@ -23,6 +23,11 @@ describe('test/unit/lib/configuration/variables/sources/file.test.js', () => {
       jsPropertyFunction: '${file(file-property-function.js):property}',
       jsPropertyFunctionProperty: '${file(file-property-function.js):property.result}',
       addressSupport: '${file(file.json):result}',
+      jsFunctionResolveVariable: '${file(file-function-variable.js)}',
+      jsFunctionResolveVariableMissingSource: '${file(file-function-variable-missing-source.js)}',
+      jsPropertyFunctionResolveVariable: '${file(file-property-function-variable.js):property}',
+      jsPropertyFunctionResolveVariableMissingSource:
+        '${file(file-property-function-variable-missing-source.js):property}',
       nonExistingYaml: '${file(not-existing.yaml), null}',
       nonExistingJson: '${file(not-existing.json), null}',
       nonExistingJs: '${file(not-existing.js), null}',
@@ -53,7 +58,7 @@ describe('test/unit/lib/configuration/variables/sources/file.test.js', () => {
     };
     variablesMeta = resolveMeta(configuration);
     await resolve({
-      servicePath,
+      serviceDir,
       configuration,
       variablesMeta,
       sources: { file: fileSource },
@@ -88,6 +93,15 @@ describe('test/unit/lib/configuration/variables/sources/file.test.js', () => {
 
   it('should support "address" argument', () =>
     expect(configuration.addressSupport).to.equal('json'));
+
+  it('should support internal variable resolution', () => {
+    expect(configuration.jsFunctionResolveVariable).to.deep.equal({
+      varResult: { result: 'yaml' },
+    });
+    expect(configuration.jsPropertyFunctionResolveVariable).to.deep.equal({
+      varResult: { result: 'json' },
+    });
+  });
 
   it('should uncoditionally split "address" property keys by "."', () =>
     expect(configuration.ambiguousAddress).to.equal('object'));
@@ -174,6 +188,16 @@ describe('test/unit/lib/configuration/variables/sources/file.test.js', () => {
     expect(variablesMeta.get('invalidJs2').error.code).to.equal('VARIABLE_RESOLUTION_ERROR');
   });
 
+  it('should report with an error if JS function attempts to resolve missing source', () =>
+    expect(variablesMeta.get('jsFunctionResolveVariableMissingSource').error.code).to.equal(
+      'MISSING_VARIABLE_RESULT'
+    ));
+
+  it('should report with an error if JS function property attempts to resolve missing source', () =>
+    expect(variablesMeta.get('jsPropertyFunctionResolveVariableMissingSource').error.code).to.equal(
+      'MISSING_VARIABLE_RESULT'
+    ));
+
   it('should not support function resolvers in "js" file sources not confirmed to work with new resolver', async () => {
     configuration = {
       jsFunction: '${file(file-function.js)}',
@@ -181,7 +205,7 @@ describe('test/unit/lib/configuration/variables/sources/file.test.js', () => {
     };
     variablesMeta = resolveMeta(configuration);
     await resolve({
-      servicePath,
+      serviceDir,
       configuration,
       variablesMeta,
       sources: { file: fileSource },

@@ -28,13 +28,14 @@ describe('#compileStage()', () => {
     serverless.setProvider('aws', new AwsProvider(serverless));
     serverless.service.service = 'my-service';
     serverless.service.provider.compiledCloudFormationTemplate = { Resources: {} };
-    serverless.config.servicePath = createTmpDir();
+    serverless.serviceDir = createTmpDir();
     serverless.cli = { log: () => {} };
 
     awsCompileWebsocketsEvents = new AwsCompileWebsocketsEvents(serverless, options);
     stageLogicalId = awsCompileWebsocketsEvents.provider.naming.getWebsocketsStageLogicalId();
     logGroupLogicalId = awsCompileWebsocketsEvents.provider.naming.getWebsocketsLogGroupLogicalId();
-    awsCompileWebsocketsEvents.websocketsApiLogicalId = awsCompileWebsocketsEvents.provider.naming.getWebsocketsApiLogicalId();
+    awsCompileWebsocketsEvents.websocketsApiLogicalId =
+      awsCompileWebsocketsEvents.provider.naming.getWebsocketsApiLogicalId();
   });
 
   it('should create a stage resource if no websocketApiId specified', () =>

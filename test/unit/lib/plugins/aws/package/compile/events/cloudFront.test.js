@@ -355,62 +355,63 @@ describe('AwsCompileCloudFrontEvents', () => {
           ],
         },
       };
-      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources = {
-        FirstLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'first',
-          },
-        },
-        FirstLambdaVersion: {
-          Type: 'AWS::Lambda::Version',
-          Properties: {
-            FunctionName: { Ref: 'FirstLambdaFunction' },
-          },
-        },
-        IamRoleLambdaExecution: {
-          Type: 'AWS::IAM::Role',
-          Properties: {
-            AssumeRolePolicyDocument: {
-              Version: '2012-10-17',
-              Statement: [
-                {
-                  Effect: 'Allow',
-                  Principal: {
-                    Service: ['lambda.amazonaws.com'],
-                  },
-                  Action: ['sts:AssumeRole'],
-                },
-              ],
+      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources =
+        {
+          FirstLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'first',
             },
-            Policies: [
-              {
-                PolicyName: {
-                  'Fn::Join': ['-', ['dev', 'first', 'lambda']],
-                },
-                PolicyDocument: {
-                  Version: '2012-10-17',
-                  Statement: [],
-                },
-              },
-            ],
-            Path: '/',
-            RoleName: {
-              'Fn::Join': [
-                '-',
-                [
-                  'first',
-                  'dev',
+          },
+          FirstLambdaVersion: {
+            Type: 'AWS::Lambda::Version',
+            Properties: {
+              FunctionName: { Ref: 'FirstLambdaFunction' },
+            },
+          },
+          IamRoleLambdaExecution: {
+            Type: 'AWS::IAM::Role',
+            Properties: {
+              AssumeRolePolicyDocument: {
+                Version: '2012-10-17',
+                Statement: [
                   {
-                    Ref: 'AWS::Region',
+                    Effect: 'Allow',
+                    Principal: {
+                      Service: ['lambda.amazonaws.com'],
+                    },
+                    Action: ['sts:AssumeRole'],
                   },
-                  'lambdaRole',
                 ],
+              },
+              Policies: [
+                {
+                  PolicyName: {
+                    'Fn::Join': ['-', ['dev', 'first', 'lambda']],
+                  },
+                  PolicyDocument: {
+                    Version: '2012-10-17',
+                    Statement: [],
+                  },
+                },
               ],
+              Path: '/',
+              RoleName: {
+                'Fn::Join': [
+                  '-',
+                  [
+                    'first',
+                    'dev',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    'lambdaRole',
+                  ],
+                ],
+              },
             },
           },
-        },
-      };
+        };
 
       expect(() => awsCompileCloudFrontEvents.compileCloudFrontEvents()).to.throw(
         /to the us-east-1 region/
@@ -431,62 +432,63 @@ describe('AwsCompileCloudFrontEvents', () => {
           ],
         },
       };
-      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources = {
-        FirstLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'first',
-          },
-        },
-        FirstLambdaVersion: {
-          Type: 'AWS::Lambda::Version',
-          Properties: {
-            FunctionName: { Ref: 'FirstLambdaFunction' },
-          },
-        },
-        IamRoleLambdaExecution: {
-          Type: 'AWS::IAM::Role',
-          Properties: {
-            AssumeRolePolicyDocument: {
-              Version: '2012-10-17',
-              Statement: [
-                {
-                  Effect: 'Allow',
-                  Principal: {
-                    Service: ['lambda.amazonaws.com'],
-                  },
-                  Action: ['sts:AssumeRole'],
-                },
-              ],
+      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources =
+        {
+          FirstLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'first',
             },
-            Policies: [
-              {
-                PolicyName: {
-                  'Fn::Join': ['-', ['dev', 'first', 'lambda']],
-                },
-                PolicyDocument: {
-                  Version: '2012-10-17',
-                  Statement: [],
-                },
-              },
-            ],
-            Path: '/',
-            RoleName: {
-              'Fn::Join': [
-                '-',
-                [
-                  'first',
-                  'dev',
+          },
+          FirstLambdaVersion: {
+            Type: 'AWS::Lambda::Version',
+            Properties: {
+              FunctionName: { Ref: 'FirstLambdaFunction' },
+            },
+          },
+          IamRoleLambdaExecution: {
+            Type: 'AWS::IAM::Role',
+            Properties: {
+              AssumeRolePolicyDocument: {
+                Version: '2012-10-17',
+                Statement: [
                   {
-                    Ref: 'AWS::Region',
+                    Effect: 'Allow',
+                    Principal: {
+                      Service: ['lambda.amazonaws.com'],
+                    },
+                    Action: ['sts:AssumeRole'],
                   },
-                  'lambdaRole',
                 ],
+              },
+              Policies: [
+                {
+                  PolicyName: {
+                    'Fn::Join': ['-', ['dev', 'first', 'lambda']],
+                  },
+                  PolicyDocument: {
+                    Version: '2012-10-17',
+                    Statement: [],
+                  },
+                },
               ],
+              Path: '/',
+              RoleName: {
+                'Fn::Join': [
+                  '-',
+                  [
+                    'first',
+                    'dev',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    'lambdaRole',
+                  ],
+                ],
+              },
             },
           },
-        },
-      };
+        };
 
       awsCompileCloudFrontEvents.compileCloudFrontEvents();
 
@@ -607,20 +609,21 @@ describe('AwsCompileCloudFrontEvents', () => {
         },
       };
 
-      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources = {
-        FirstLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'first',
+      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources =
+        {
+          FirstLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'first',
+            },
           },
-        },
-        SecondLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'second',
+          SecondLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'second',
+            },
           },
-        },
-      };
+        };
 
       awsCompileCloudFrontEvents.compileCloudFrontEvents();
 
@@ -677,20 +680,21 @@ describe('AwsCompileCloudFrontEvents', () => {
         },
       };
 
-      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources = {
-        FirstLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'first',
+      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources =
+        {
+          FirstLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'first',
+            },
           },
-        },
-        SecondLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'second',
+          SecondLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'second',
+            },
           },
-        },
-      };
+        };
 
       awsCompileCloudFrontEvents.compileCloudFrontEvents();
 
@@ -744,14 +748,15 @@ describe('AwsCompileCloudFrontEvents', () => {
         },
       };
 
-      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources = {
-        FirstLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'first',
+      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources =
+        {
+          FirstLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'first',
+            },
           },
-        },
-      };
+        };
 
       awsCompileCloudFrontEvents.compileCloudFrontEvents();
 
@@ -807,20 +812,21 @@ describe('AwsCompileCloudFrontEvents', () => {
         },
       };
 
-      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources = {
-        FirstLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'first',
+      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources =
+        {
+          FirstLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'first',
+            },
           },
-        },
-        SecondLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'second',
+          SecondLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'second',
+            },
           },
-        },
-      };
+        };
 
       awsCompileCloudFrontEvents.compileCloudFrontEvents();
 
@@ -863,14 +869,15 @@ describe('AwsCompileCloudFrontEvents', () => {
         },
       };
 
-      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources = {
-        FirstLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'first',
+      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources =
+        {
+          FirstLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'first',
+            },
           },
-        },
-      };
+        };
 
       awsCompileCloudFrontEvents.compileCloudFrontEvents();
 
@@ -936,20 +943,21 @@ describe('AwsCompileCloudFrontEvents', () => {
         },
       };
 
-      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources = {
-        FirstLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'first',
+      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources =
+        {
+          FirstLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'first',
+            },
           },
-        },
-        SecondLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'second',
+          SecondLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'second',
+            },
           },
-        },
-      };
+        };
 
       awsCompileCloudFrontEvents.compileCloudFrontEvents();
 
@@ -1001,20 +1009,21 @@ describe('AwsCompileCloudFrontEvents', () => {
         },
       };
 
-      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources = {
-        FirstLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'first',
+      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources =
+        {
+          FirstLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'first',
+            },
           },
-        },
-        SecondLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'second',
+          SecondLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'second',
+            },
           },
-        },
-      };
+        };
 
       expect(() => {
         awsCompileCloudFrontEvents.compileCloudFrontEvents();
@@ -1048,32 +1057,33 @@ describe('AwsCompileCloudFrontEvents', () => {
         },
       };
 
-      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources = {
-        FirstLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'first',
+      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources =
+        {
+          FirstLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'first',
+            },
           },
-        },
-        FirstLambdaVersion: {
-          Type: 'AWS::Lambda::Version',
-          Properties: {
-            FunctionName: { Ref: 'FirstLambdaFunction' },
+          FirstLambdaVersion: {
+            Type: 'AWS::Lambda::Version',
+            Properties: {
+              FunctionName: { Ref: 'FirstLambdaFunction' },
+            },
           },
-        },
-        SecondLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'second',
+          SecondLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'second',
+            },
           },
-        },
-        SecondLambdaVersion: {
-          Type: 'AWS::Lambda::Version',
-          Properties: {
-            FunctionName: { Ref: 'SecondLambdaFunction' },
+          SecondLambdaVersion: {
+            Type: 'AWS::Lambda::Version',
+            Properties: {
+              FunctionName: { Ref: 'SecondLambdaFunction' },
+            },
           },
-        },
-      };
+        };
 
       awsCompileCloudFrontEvents.compileCloudFrontEvents();
 
@@ -1134,20 +1144,21 @@ describe('AwsCompileCloudFrontEvents', () => {
         },
       };
 
-      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources = {
-        FirstLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'first',
+      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources =
+        {
+          FirstLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'first',
+            },
           },
-        },
-        FirstLambdaVersion: {
-          Type: 'AWS::Lambda::Version',
-          Properties: {
-            FunctionName: { Ref: 'FirstLambdaFunction' },
+          FirstLambdaVersion: {
+            Type: 'AWS::Lambda::Version',
+            Properties: {
+              FunctionName: { Ref: 'FirstLambdaFunction' },
+            },
           },
-        },
-      };
+        };
 
       awsCompileCloudFrontEvents.compileCloudFrontEvents();
 
@@ -1213,32 +1224,33 @@ describe('AwsCompileCloudFrontEvents', () => {
         },
       };
 
-      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources = {
-        FirstLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'first',
+      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources =
+        {
+          FirstLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'first',
+            },
           },
-        },
-        FirstLambdaVersion: {
-          Type: 'AWS::Lambda::Version',
-          Properties: {
-            FunctionName: { Ref: 'FirstLambdaFunction' },
+          FirstLambdaVersion: {
+            Type: 'AWS::Lambda::Version',
+            Properties: {
+              FunctionName: { Ref: 'FirstLambdaFunction' },
+            },
           },
-        },
-        SecondLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'second',
+          SecondLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'second',
+            },
           },
-        },
-        SecondLambdaVersion: {
-          Type: 'AWS::Lambda::Version',
-          Properties: {
-            FunctionName: { Ref: 'SecondLambdaFunction' },
+          SecondLambdaVersion: {
+            Type: 'AWS::Lambda::Version',
+            Properties: {
+              FunctionName: { Ref: 'SecondLambdaFunction' },
+            },
           },
-        },
-      };
+        };
 
       awsCompileCloudFrontEvents.compileCloudFrontEvents();
 
@@ -1321,32 +1333,33 @@ describe('AwsCompileCloudFrontEvents', () => {
         },
       };
 
-      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources = {
-        FirstLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'first',
+      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources =
+        {
+          FirstLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'first',
+            },
           },
-        },
-        FirstLambdaVersion: {
-          Type: 'AWS::Lambda::Version',
-          Properties: {
-            FunctionName: { Ref: 'FirstLambdaFunction' },
+          FirstLambdaVersion: {
+            Type: 'AWS::Lambda::Version',
+            Properties: {
+              FunctionName: { Ref: 'FirstLambdaFunction' },
+            },
           },
-        },
-        SecondLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'second',
+          SecondLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'second',
+            },
           },
-        },
-        SecondLambdaVersion: {
-          Type: 'AWS::Lambda::Version',
-          Properties: {
-            FunctionName: { Ref: 'SecondLambdaFunction' },
+          SecondLambdaVersion: {
+            Type: 'AWS::Lambda::Version',
+            Properties: {
+              FunctionName: { Ref: 'SecondLambdaFunction' },
+            },
           },
-        },
-      };
+        };
 
       expect(() => {
         awsCompileCloudFrontEvents.compileCloudFrontEvents();
@@ -1382,32 +1395,33 @@ describe('AwsCompileCloudFrontEvents', () => {
         },
       };
 
-      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources = {
-        FirstLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'first',
+      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources =
+        {
+          FirstLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'first',
+            },
           },
-        },
-        FirstLambdaVersion: {
-          Type: 'AWS::Lambda::Version',
-          Properties: {
-            FunctionName: { Ref: 'FirstLambdaFunction' },
+          FirstLambdaVersion: {
+            Type: 'AWS::Lambda::Version',
+            Properties: {
+              FunctionName: { Ref: 'FirstLambdaFunction' },
+            },
           },
-        },
-        SecondLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'second',
+          SecondLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'second',
+            },
           },
-        },
-        SecondLambdaVersion: {
-          Type: 'AWS::Lambda::Version',
-          Properties: {
-            FunctionName: { Ref: 'SecondLambdaFunction' },
+          SecondLambdaVersion: {
+            Type: 'AWS::Lambda::Version',
+            Properties: {
+              FunctionName: { Ref: 'SecondLambdaFunction' },
+            },
           },
-        },
-      };
+        };
 
       awsCompileCloudFrontEvents.compileCloudFrontEvents();
 
@@ -1464,20 +1478,21 @@ describe('AwsCompileCloudFrontEvents', () => {
         },
       };
 
-      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources = {
-        FirstLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'first',
+      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources =
+        {
+          FirstLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'first',
+            },
           },
-        },
-        FirstLambdaVersion: {
-          Type: 'AWS::Lambda::Version',
-          Properties: {
-            FunctionName: { Ref: 'FirstLambdaFunction' },
+          FirstLambdaVersion: {
+            Type: 'AWS::Lambda::Version',
+            Properties: {
+              FunctionName: { Ref: 'FirstLambdaFunction' },
+            },
           },
-        },
-      };
+        };
 
       awsCompileCloudFrontEvents.compileCloudFrontEvents();
 
@@ -1532,32 +1547,33 @@ describe('AwsCompileCloudFrontEvents', () => {
         },
       };
 
-      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources = {
-        FirstLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'first',
+      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources =
+        {
+          FirstLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'first',
+            },
           },
-        },
-        FirstLambdaVersion: {
-          Type: 'AWS::Lambda::Version',
-          Properties: {
-            FunctionName: { Ref: 'FirstLambdaFunction' },
+          FirstLambdaVersion: {
+            Type: 'AWS::Lambda::Version',
+            Properties: {
+              FunctionName: { Ref: 'FirstLambdaFunction' },
+            },
           },
-        },
-        SecondLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'second',
+          SecondLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'second',
+            },
           },
-        },
-        SecondLambdaVersion: {
-          Type: 'AWS::Lambda::Version',
-          Properties: {
-            FunctionName: { Ref: 'SecondLambdaFunction' },
+          SecondLambdaVersion: {
+            Type: 'AWS::Lambda::Version',
+            Properties: {
+              FunctionName: { Ref: 'SecondLambdaFunction' },
+            },
           },
-        },
-      };
+        };
 
       expect(() => {
         awsCompileCloudFrontEvents.compileCloudFrontEvents();
@@ -1592,32 +1608,33 @@ describe('AwsCompileCloudFrontEvents', () => {
         },
       };
 
-      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources = {
-        FirstLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'first',
+      awsCompileCloudFrontEvents.serverless.service.provider.compiledCloudFormationTemplate.Resources =
+        {
+          FirstLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'first',
+            },
           },
-        },
-        FirstLambdaVersion: {
-          Type: 'AWS::Lambda::Version',
-          Properties: {
-            FunctionName: { Ref: 'FirstLambdaFunction' },
+          FirstLambdaVersion: {
+            Type: 'AWS::Lambda::Version',
+            Properties: {
+              FunctionName: { Ref: 'FirstLambdaFunction' },
+            },
           },
-        },
-        SecondLambdaFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            FunctionName: 'second',
+          SecondLambdaFunction: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              FunctionName: 'second',
+            },
           },
-        },
-        SecondLambdaVersion: {
-          Type: 'AWS::Lambda::Version',
-          Properties: {
-            FunctionName: { Ref: 'SecondLambdaFunction' },
+          SecondLambdaVersion: {
+            Type: 'AWS::Lambda::Version',
+            Properties: {
+              FunctionName: { Ref: 'SecondLambdaFunction' },
+            },
           },
-        },
-      };
+        };
 
       expect(() => {
         awsCompileCloudFrontEvents.compileCloudFrontEvents();
@@ -1638,7 +1655,7 @@ describe('lib/plugins/aws/package/compile/events/cloudFront/index.new.test.js', 
       // Inspect result.stdoutData
       await runServerless({
         fixture: 'function',
-        cliArgs: ['remove'],
+        command: 'remove',
         lastLifecycleHookName: 'before:remove:remove',
       });
     });
@@ -1650,7 +1667,7 @@ describe('lib/plugins/aws/package/compile/events/cloudFront/index.new.test.js', 
       // Inspect result.stdoutData
       await runServerless({
         fixture: 'function',
-        cliArgs: ['remove'],
+        command: 'remove',
         lastLifecycleHookName: 'before:remove:remove',
       });
     });
@@ -1662,7 +1679,7 @@ describe('lib/plugins/aws/package/compile/events/cloudFront/index.new.test.js', 
       // https://github.com/serverless/serverless/blob/85e480b5771d5deeb45ae5eb586723c26cf61a90/lib/plugins/aws/package/compile/events/cloudFront/index.test.js#L131-L167
 
       return expect(
-        runServerless({ fixture: 'function', cliArgs: ['package'] })
+        runServerless({ fixture: 'function', command: 'package' })
       ).to.eventually.be.rejected.and.have.property('code', 'TODO');
       // Ensure ServerlessError is thrown and that it has some meaningful code
       // Then test like here:
@@ -1674,7 +1691,7 @@ describe('lib/plugins/aws/package/compile/events/cloudFront/index.new.test.js', 
       // https://github.com/serverless/serverless/blob/85e480b5771d5deeb45ae5eb586723c26cf61a90/lib/plugins/aws/package/compile/events/cloudFront/index.test.js#L169-L204
 
       return expect(
-        runServerless({ fixture: 'function', cliArgs: ['package'] })
+        runServerless({ fixture: 'function', command: 'package' })
       ).to.eventually.be.rejected.and.have.property('code', 'TODO');
     });
 
@@ -1683,7 +1700,7 @@ describe('lib/plugins/aws/package/compile/events/cloudFront/index.new.test.js', 
       // https://github.com/serverless/serverless/blob/85e480b5771d5deeb45ae5eb586723c26cf61a90/lib/plugins/aws/package/compile/events/cloudFront/index.test.js#L206-L242
 
       return expect(
-        runServerless({ fixture: 'function', cliArgs: ['package'] })
+        runServerless({ fixture: 'function', command: 'package' })
       ).to.eventually.be.rejected.and.have.property('code', 'TODO');
     });
 
@@ -1692,7 +1709,7 @@ describe('lib/plugins/aws/package/compile/events/cloudFront/index.new.test.js', 
       // https://github.com/serverless/serverless/blob/85e480b5771d5deeb45ae5eb586723c26cf61a90/lib/plugins/aws/package/compile/events/cloudFront/index.test.js#L206-L242
 
       return expect(
-        runServerless({ fixture: 'function', cliArgs: ['package'] })
+        runServerless({ fixture: 'function', command: 'package' })
       ).to.eventually.be.rejected.and.have.property('code', 'TODO');
     });
 
@@ -1701,7 +1718,7 @@ describe('lib/plugins/aws/package/compile/events/cloudFront/index.new.test.js', 
       // https://github.com/serverless/serverless/blob/85e480b5771d5deeb45ae5eb586723c26cf61a90/lib/plugins/aws/package/compile/events/cloudFront/index.test.js#L244-L280
 
       return expect(
-        runServerless({ fixture: 'function', cliArgs: ['package'] })
+        runServerless({ fixture: 'function', command: 'package' })
       ).to.eventually.be.rejected.and.have.property('code', 'TODO');
     });
 
@@ -1710,7 +1727,7 @@ describe('lib/plugins/aws/package/compile/events/cloudFront/index.new.test.js', 
       // https://github.com/serverless/serverless/blob/85e480b5771d5deeb45ae5eb586723c26cf61a90/lib/plugins/aws/package/compile/events/cloudFront/index.test.js#L244-L280
 
       return expect(
-        runServerless({ fixture: 'function', cliArgs: ['package'] })
+        runServerless({ fixture: 'function', command: 'package' })
       ).to.eventually.be.rejected.and.have.property('code', 'TODO');
     });
 
@@ -1719,7 +1736,7 @@ describe('lib/plugins/aws/package/compile/events/cloudFront/index.new.test.js', 
       // https://github.com/serverless/serverless/blob/85e480b5771d5deeb45ae5eb586723c26cf61a90/lib/plugins/aws/package/compile/events/cloudFront/index.test.js#L355-L430
 
       return expect(
-        runServerless({ fixture: 'function', cliArgs: ['package'] })
+        runServerless({ fixture: 'function', command: 'package' })
       ).to.eventually.be.rejected.and.have.property('code', 'TODO');
     });
 
@@ -1728,7 +1745,7 @@ describe('lib/plugins/aws/package/compile/events/cloudFront/index.new.test.js', 
       // https://github.com/serverless/serverless/blob/85e480b5771d5deeb45ae5eb586723c26cf61a90/lib/plugins/aws/package/compile/events/cloudFront/index.test.js#L988-L1034
 
       return expect(
-        runServerless({ fixture: 'function', cliArgs: ['package'] })
+        runServerless({ fixture: 'function', command: 'package' })
       ).to.eventually.be.rejected.and.have.property('code', 'TODO');
     });
 
@@ -1737,7 +1754,7 @@ describe('lib/plugins/aws/package/compile/events/cloudFront/index.new.test.js', 
       // https://github.com/serverless/serverless/blob/85e480b5771d5deeb45ae5eb586723c26cf61a90/lib/plugins/aws/package/compile/events/cloudFront/index.test.js#L1308-L1369
 
       return expect(
-        runServerless({ fixture: 'function', cliArgs: ['package'] })
+        runServerless({ fixture: 'function', command: 'package' })
       ).to.eventually.be.rejected.and.have.property('code', 'TODO');
     });
 
@@ -1745,7 +1762,7 @@ describe('lib/plugins/aws/package/compile/events/cloudFront/index.new.test.js', 
       return expect(
         runServerless({
           fixture: 'function',
-          cliArgs: ['package'],
+          command: 'package',
           configExt: {
             functions: {
               foo: {
@@ -1773,7 +1790,7 @@ describe('lib/plugins/aws/package/compile/events/cloudFront/index.new.test.js', 
       return expect(
         runServerless({
           fixture: 'function',
-          cliArgs: ['package'],
+          command: 'package',
           configExt: {
             functions: {
               foo: {
@@ -1808,7 +1825,7 @@ describe('lib/plugins/aws/package/compile/events/cloudFront/index.new.test.js', 
       const cachePolicyId = '08627262-05a9-4f76-9ded-b50ca2e3a84f';
       await runServerless({
         fixture: 'function',
-        cliArgs: ['package'],
+        command: 'package',
         configExt: {
           functions: {
             foo: {
@@ -1840,28 +1857,28 @@ describe('lib/plugins/aws/package/compile/events/cloudFront/index.new.test.js', 
       // Replaces
       // https://github.com/serverless/serverless/blob/85e480b5771d5deeb45ae5eb586723c26cf61a90/lib/plugins/aws/package/compile/events/cloudFront/index.test.js#L572-L593
 
-      await runServerless({ fixture: 'function', cliArgs: ['package'] });
+      await runServerless({ fixture: 'function', command: 'package' });
     });
 
     it('should create DefaultCacheBehavior if there are no events without PathPattern configured', async () => {
       // Replaces
       // https://github.com/serverless/serverless/blob/85e480b5771d5deeb45ae5eb586723c26cf61a90/lib/plugins/aws/package/compile/events/cloudFront/index.test.js#L1133-L1197
 
-      await runServerless({ fixture: 'function', cliArgs: ['package'] });
+      await runServerless({ fixture: 'function', command: 'package' });
     });
 
     it('should throw if more than one origin with the same PathPattern', async () => {
       // Replaces
       // https://github.com/serverless/serverless/blob/85e480b5771d5deeb45ae5eb586723c26cf61a90/lib/plugins/aws/package/compile/events/cloudFront/index.test.js#L1519-L1577
 
-      await runServerless({ fixture: 'function', cliArgs: ['package'] });
+      await runServerless({ fixture: 'function', command: 'package' });
     });
 
     it('should throw if more than one origin with the same event type', async () => {
       // Replaces
       // https://github.com/serverless/serverless/blob/85e480b5771d5deeb45ae5eb586723c26cf61a90/lib/plugins/aws/package/compile/events/cloudFront/index.test.js#L1579-L1640
 
-      await runServerless({ fixture: 'function', cliArgs: ['package'] });
+      await runServerless({ fixture: 'function', command: 'package' });
     });
   });
 
@@ -1909,7 +1926,8 @@ describe('lib/plugins/aws/package/compile/events/cloudFront/index.new.test.js', 
         },
       } = await runServerless({
         fixture: 'function',
-        cliArgs: ['package', '--stage', stage],
+        command: 'package',
+        options: { stage },
         configExt: {
           provider: {
             cloudFront: {

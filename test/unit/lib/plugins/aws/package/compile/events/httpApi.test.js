@@ -11,7 +11,7 @@ describe('lib/plugins/aws/package/compile/events/httpApi.test.js', () => {
   it('should not configure HTTP API resources when no events are configured', () =>
     runServerless({
       config: { service: 'irrelevant', provider: 'aws' },
-      cliArgs: ['package'],
+      command: 'package',
     }).then(({ serverless }) => {
       const cfResources = serverless.service.provider.compiledCloudFormationTemplate.Resources;
       const naming = serverless.getProvider('aws').naming;
@@ -28,7 +28,7 @@ describe('lib/plugins/aws/package/compile/events/httpApi.test.js', () => {
     before(() =>
       runServerless({
         fixture: 'httpApi',
-        cliArgs: ['package'],
+        command: 'package',
         configExt: {
           functions: {
             catchAll: { handler: 'index.handler', events: [{ httpApi: '*' }] },
@@ -183,7 +183,7 @@ describe('lib/plugins/aws/package/compile/events/httpApi.test.js', () => {
             },
           },
         },
-        cliArgs: ['package'],
+        command: 'package',
       }).then(({ awsNaming, cfTemplate, fixtureData }) => {
         const { Resources } = cfTemplate;
         cfApi = Resources[awsNaming.getHttpApiLogicalId()];
@@ -206,6 +206,10 @@ describe('lib/plugins/aws/package/compile/events/httpApi.test.js', () => {
       const { Tags } = cfApi.Properties;
       expect(Tags).to.be.a('object');
       expect(Tags).to.deep.equal(expectedTags);
+
+      const { Tags: stageTags } = cfStage.Properties;
+      expect(stageTags).to.be.a('object');
+      expect(stageTags).to.deep.equal(expectedTags);
     });
 
     it('should set payload format version', () => {
@@ -267,7 +271,7 @@ describe('lib/plugins/aws/package/compile/events/httpApi.test.js', () => {
                 },
               },
             },
-            cliArgs: ['package'],
+            command: 'package',
           }).then(({ awsNaming, cfTemplate }) => {
             cfCors =
               cfTemplate.Resources[awsNaming.getHttpApiLogicalId()].Properties.CorsConfiguration;
@@ -309,7 +313,7 @@ describe('lib/plugins/aws/package/compile/events/httpApi.test.js', () => {
                 },
               },
             },
-            cliArgs: ['package'],
+            command: 'package',
           }).then(({ awsNaming, cfTemplate }) => {
             cfCors =
               cfTemplate.Resources[awsNaming.getHttpApiLogicalId()].Properties.CorsConfiguration;
@@ -337,7 +341,7 @@ describe('lib/plugins/aws/package/compile/events/httpApi.test.js', () => {
                 },
               },
             },
-            cliArgs: ['package'],
+            command: 'package',
           }).then(({ awsNaming, cfTemplate }) => {
             cfCors =
               cfTemplate.Resources[awsNaming.getHttpApiLogicalId()].Properties.CorsConfiguration;
@@ -410,7 +414,7 @@ describe('lib/plugins/aws/package/compile/events/httpApi.test.js', () => {
             },
           },
         },
-        cliArgs: ['package'],
+        command: 'package',
       });
       cfResources = cfTemplate.Resources;
       naming = awsNaming;
@@ -458,9 +462,8 @@ describe('lib/plugins/aws/package/compile/events/httpApi.test.js', () => {
     });
 
     it('should create permission resource when authorizer references function from service', () => {
-      const authorizerPermissionLogicalId = naming.getLambdaAuthorizerHttpApiPermissionLogicalId(
-        'someAuthorizer'
-      );
+      const authorizerPermissionLogicalId =
+        naming.getLambdaAuthorizerHttpApiPermissionLogicalId('someAuthorizer');
       expect(cfResources[authorizerPermissionLogicalId]).to.deep.equal({
         Type: 'AWS::Lambda::Permission',
         Properties: {
@@ -565,7 +568,7 @@ describe('lib/plugins/aws/package/compile/events/httpApi.test.js', () => {
               },
             },
           },
-          cliArgs: ['package'],
+          command: 'package',
         })
       ).to.eventually.be.rejected.and.have.property(
         'code',
@@ -603,7 +606,7 @@ describe('lib/plugins/aws/package/compile/events/httpApi.test.js', () => {
               },
             },
           },
-          cliArgs: ['package'],
+          command: 'package',
         })
       ).to.eventually.be.rejected.and.have.property(
         'code',
@@ -640,7 +643,7 @@ describe('lib/plugins/aws/package/compile/events/httpApi.test.js', () => {
               },
             },
           },
-          cliArgs: ['package'],
+          command: 'package',
         })
       ).to.eventually.be.rejected.and.have.property(
         'code',
@@ -678,7 +681,7 @@ describe('lib/plugins/aws/package/compile/events/httpApi.test.js', () => {
               },
             },
           },
-          cliArgs: ['package'],
+          command: 'package',
         })
       ).to.eventually.be.rejected.and.have.property(
         'code',
@@ -705,7 +708,7 @@ describe('lib/plugins/aws/package/compile/events/httpApi.test.js', () => {
               },
             },
           },
-          cliArgs: ['package'],
+          command: 'package',
         })
       ).to.eventually.be.rejected.and.have.property(
         'code',
@@ -747,7 +750,7 @@ describe('lib/plugins/aws/package/compile/events/httpApi.test.js', () => {
             },
           },
         },
-        cliArgs: ['package'],
+        command: 'package',
       }).then(({ awsNaming, cfTemplate }) => {
         cfResources = cfTemplate.Resources;
         naming = awsNaming;
@@ -797,7 +800,7 @@ describe('lib/plugins/aws/package/compile/events/httpApi.test.js', () => {
               },
             },
           },
-          cliArgs: ['package'],
+          command: 'package',
         })
       ).to.eventually.be.rejected.and.have.property(
         'code',
@@ -825,7 +828,7 @@ describe('lib/plugins/aws/package/compile/events/httpApi.test.js', () => {
             },
           },
         },
-        cliArgs: ['package'],
+        command: 'package',
       });
       const routeResourceProps =
         cfTemplate.Resources[awsNaming.getHttpApiRouteLogicalId('GET /foo')].Properties;
@@ -853,7 +856,7 @@ describe('lib/plugins/aws/package/compile/events/httpApi.test.js', () => {
               },
             },
           },
-          cliArgs: ['package'],
+          command: 'package',
         })
       ).to.eventually.be.rejected.and.have.property(
         'code',
@@ -898,7 +901,7 @@ describe('lib/plugins/aws/package/compile/events/httpApi.test.js', () => {
               },
             },
           },
-          cliArgs: ['package'],
+          command: 'package',
         });
         cfResources = cfTemplate.Resources;
         naming = awsNaming;
@@ -943,7 +946,7 @@ describe('lib/plugins/aws/package/compile/events/httpApi.test.js', () => {
                 },
               },
             },
-            cliArgs: ['package'],
+            command: 'package',
           })
         ).to.eventually.be.rejected.and.have.property(
           'code',
@@ -964,7 +967,7 @@ describe('lib/plugins/aws/package/compile/events/httpApi.test.js', () => {
         runServerless({
           fixture: 'httpApi',
           configExt: { provider: { httpApi: { id: apiId } } },
-          cliArgs: ['package'],
+          command: 'package',
         }).then(({ awsNaming, cfTemplate }) => {
           ({ Resources: cfResources, Outputs: cfOutputs } = cfTemplate);
           naming = awsNaming;
@@ -1013,7 +1016,7 @@ describe('lib/plugins/aws/package/compile/events/httpApi.test.js', () => {
                 },
               },
             },
-            cliArgs: ['package'],
+            command: 'package',
           })
         ).to.eventually.be.rejected.and.have.property('code', 'EXTERNAL_HTTP_API_CORS_CONFIG');
       });
@@ -1035,7 +1038,7 @@ describe('lib/plugins/aws/package/compile/events/httpApi.test.js', () => {
                 },
               },
             },
-            cliArgs: ['package'],
+            command: 'package',
           })
         ).to.eventually.be.rejected.and.have.property(
           'code',
@@ -1056,7 +1059,7 @@ describe('lib/plugins/aws/package/compile/events/httpApi.test.js', () => {
                 },
               },
             },
-            cliArgs: ['package'],
+            command: 'package',
           })
         ).to.eventually.be.rejected.and.have.property('code', 'EXTERNAL_HTTP_API_LOGS_CONFIG');
       });

@@ -8,12 +8,12 @@ chai.use(require('chai-as-promised'));
 const expect = chai.expect;
 const FUNCTION_NAME_PATTERN = '^[a-zA-Z0-9-_]+$';
 
-describe('ConfigSchemaHandler', () => {
+describe('test/unit/lib/classes/ConfigSchemaHandler/index.test.js', () => {
   describe('#constructor', () => {
     it('should freeze parts of schema for service', () => {
       return runServerless({
         fixture: 'configSchemaExtensions',
-        cliArgs: ['info'],
+        command: 'info',
       }).then((serverless) => {
         expect(() => {
           serverless.configSchemaHandler.schema.properties.service.name = 'changed';
@@ -24,7 +24,7 @@ describe('ConfigSchemaHandler', () => {
     it('should freeze parts of schema for plugins', () => {
       return runServerless({
         fixture: 'configSchemaExtensions',
-        cliArgs: ['info'],
+        command: 'info',
       }).then((serverless) => {
         expect(() => {
           serverless.configSchemaHandler.schema.properties.plugins.properties = 'changed';
@@ -35,7 +35,7 @@ describe('ConfigSchemaHandler', () => {
     it('should freeze parts of schema for resources', () => {
       return runServerless({
         fixture: 'configSchemaExtensions',
-        cliArgs: ['info'],
+        command: 'info',
       }).then((serverless) => {
         expect(() => {
           serverless.configSchemaHandler.schema.properties.resources.something = 'changed';
@@ -46,7 +46,7 @@ describe('ConfigSchemaHandler', () => {
     it('should freeze parts of schema for package', () => {
       return runServerless({
         fixture: 'configSchemaExtensions',
-        cliArgs: ['info'],
+        command: 'info',
       }).then((serverless) => {
         expect(() => {
           serverless.configSchemaHandler.schema.properties.package.properties.oneMore = {
@@ -59,7 +59,7 @@ describe('ConfigSchemaHandler', () => {
     it('should freeze parts of schema for layers', () => {
       return runServerless({
         fixture: 'configSchemaExtensions',
-        cliArgs: ['info'],
+        command: 'info',
       }).then((serverless) => {
         expect(() => {
           serverless.configSchemaHandler.schema.properties.layers.properties = 'changed';
@@ -72,7 +72,7 @@ describe('ConfigSchemaHandler', () => {
     it('should run without errors for valid config', () => {
       return runServerless({
         fixture: 'configSchemaExtensions',
-        cliArgs: ['info'],
+        command: 'info',
       });
     });
   });
@@ -81,7 +81,7 @@ describe('ConfigSchemaHandler', () => {
     it('should extend schema with defineFunctionEvent method', () => {
       return runServerless({
         fixture: 'configSchemaExtensions',
-        cliArgs: ['info'],
+        command: 'info',
       }).then((serverless) => {
         const expectedPieceOfSchema = {
           type: 'object',
@@ -115,7 +115,7 @@ describe('ConfigSchemaHandler', () => {
       await expect(
         runServerless({
           fixture: 'configSchemaExtensionsError',
-          cliArgs: ['info'],
+          command: 'info',
           configExt: {
             plugins: ['./test-plugin-with-colliding-function-event'],
           },
@@ -128,14 +128,15 @@ describe('ConfigSchemaHandler', () => {
     it('should extend schema with defineFunctionEventProperties method', async () => {
       const serverless = await runServerless({
         fixture: 'configSchemaExtensions',
-        cliArgs: ['info'],
+        command: 'info',
       });
 
-      const existingEventDefinition = serverless.serverless.configSchemaHandler.schema.properties.functions.patternProperties[
-        FUNCTION_NAME_PATTERN
-      ].properties.events.items.anyOf.find(
-        (definition) => definition.required[0] === 'existingEvent'
-      ).properties.existingEvent;
+      const existingEventDefinition =
+        serverless.serverless.configSchemaHandler.schema.properties.functions.patternProperties[
+          FUNCTION_NAME_PATTERN
+        ].properties.events.items.anyOf.find(
+          (definition) => definition.required[0] === 'existingEvent'
+        ).properties.existingEvent;
 
       expect(existingEventDefinition.properties).to.have.deep.property(
         'somePluginAdditionalEventProp',
@@ -149,14 +150,15 @@ describe('ConfigSchemaHandler', () => {
     it('should extend schema with defineFunctionEventProperties method on complex event schema', async () => {
       const serverless = await runServerless({
         fixture: 'configSchemaExtensions',
-        cliArgs: ['info'],
+        command: 'info',
       });
 
-      const existingEventDefinition = serverless.serverless.configSchemaHandler.schema.properties.functions.patternProperties[
-        FUNCTION_NAME_PATTERN
-      ].properties.events.items.anyOf.find(
-        (definition) => definition.required[0] === 'existingComplexEvent'
-      ).properties.existingComplexEvent;
+      const existingEventDefinition =
+        serverless.serverless.configSchemaHandler.schema.properties.functions.patternProperties[
+          FUNCTION_NAME_PATTERN
+        ].properties.events.items.anyOf.find(
+          (definition) => definition.required[0] === 'existingComplexEvent'
+        ).properties.existingComplexEvent;
 
       expect(existingEventDefinition).to.deep.equal({
         anyOf: [
@@ -177,7 +179,7 @@ describe('ConfigSchemaHandler', () => {
       await expect(
         runServerless({
           fixture: 'configSchemaExtensionsError',
-          cliArgs: ['info'],
+          command: 'info',
           configExt: {
             plugins: ['./test-plugin-with-non-existing-event-error'],
           },
@@ -189,7 +191,7 @@ describe('ConfigSchemaHandler', () => {
       await expect(
         runServerless({
           fixture: 'configSchemaExtensionsError',
-          cliArgs: ['info'],
+          command: 'info',
           configExt: {
             plugins: ['./test-plugin-with-complex-event-without-object-definition'],
           },
@@ -201,7 +203,7 @@ describe('ConfigSchemaHandler', () => {
       await expect(
         runServerless({
           fixture: 'configSchemaExtensionsError',
-          cliArgs: ['info'],
+          command: 'info',
           configExt: {
             plugins: ['./test-plugin-with-colliding-function-event-property'],
           },
@@ -214,7 +216,7 @@ describe('ConfigSchemaHandler', () => {
     it('should extend schema with defineFunctionProperties method', () => {
       return runServerless({
         fixture: 'configSchemaExtensions',
-        cliArgs: ['info'],
+        command: 'info',
       }).then((serverless) => {
         const actualFunctionProperties =
           serverless.serverless.configSchemaHandler.schema.properties.functions.patternProperties[
@@ -237,7 +239,7 @@ describe('ConfigSchemaHandler', () => {
       await expect(
         runServerless({
           fixture: 'configSchemaExtensionsError',
-          cliArgs: ['info'],
+          command: 'info',
           configExt: {
             plugins: ['./test-plugin-with-colliding-function-property'],
           },
@@ -250,7 +252,7 @@ describe('ConfigSchemaHandler', () => {
     it('should extend schema with defineCustomProperties method', () => {
       return runServerless({
         fixture: 'configSchemaExtensions',
-        cliArgs: ['info'],
+        command: 'info',
       }).then((serverless) => {
         const someCustomStringProp = {
           type: 'string',
@@ -267,7 +269,7 @@ describe('ConfigSchemaHandler', () => {
       await expect(
         runServerless({
           fixture: 'configSchemaExtensionsError',
-          cliArgs: ['info'],
+          command: 'info',
           configExt: {
             plugins: ['./test-plugin-with-colliding-custom-property'],
           },
@@ -280,7 +282,7 @@ describe('ConfigSchemaHandler', () => {
     it('should extend schema with defineTopLevelProperty method', () => {
       return runServerless({
         fixture: 'configSchemaExtensions',
-        cliArgs: ['info'],
+        command: 'info',
       }).then((serverless) => {
         const expectedAppPropSchema = {
           type: 'string',
@@ -296,7 +298,7 @@ describe('ConfigSchemaHandler', () => {
       await expect(
         runServerless({
           fixture: 'configSchemaExtensionsError',
-          cliArgs: ['info'],
+          command: 'info',
           configExt: {
             plugins: ['./test-plugin-with-colliding-top-level-property'],
           },
@@ -309,7 +311,7 @@ describe('ConfigSchemaHandler', () => {
     it('should extend schema with defineProvider method', () => {
       return runServerless({
         fixture: 'configSchemaExtensions',
-        cliArgs: ['info'],
+        command: 'info',
       }).then((serverless) => {
         const providerPieceOfSchema = {
           type: 'object',
@@ -339,7 +341,7 @@ describe('ConfigSchemaHandler', () => {
       await expect(
         runServerless({
           fixture: 'configSchemaExtensionsError',
-          cliArgs: ['info'],
+          command: 'info',
           configExt: {
             plugins: ['./test-plugin-with-colliding-provider-property-in-provider'],
           },
@@ -351,7 +353,7 @@ describe('ConfigSchemaHandler', () => {
       await expect(
         runServerless({
           fixture: 'configSchemaExtensionsError',
-          cliArgs: ['info'],
+          command: 'info',
           configExt: {
             plugins: ['./test-plugin-with-colliding-provider-property-in-function'],
           },

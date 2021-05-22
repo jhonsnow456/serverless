@@ -10,7 +10,6 @@ const proxyquire = require('proxyquire');
 describe('AwsRollbackFunction', () => {
   let serverless;
   let awsRollbackFunction;
-  let consoleLogStub;
   let fetchStub;
   let AwsRollbackFunction;
 
@@ -20,7 +19,6 @@ describe('AwsRollbackFunction', () => {
       'node-fetch': fetchStub,
     });
     serverless = new Serverless();
-    serverless.servicePath = true;
     serverless.service.functions = {
       hello: {
         handler: true,
@@ -35,11 +33,6 @@ describe('AwsRollbackFunction', () => {
     serverless.setProvider('aws', new AwsProvider(serverless, options));
     serverless.cli = new CLI(serverless);
     awsRollbackFunction = new AwsRollbackFunction(serverless, options);
-    consoleLogStub = sinon.stub(serverless.cli, 'consoleLog').returns();
-  });
-
-  afterEach(() => {
-    serverless.cli.consoleLog.restore();
   });
 
   describe('#constructor()', () => {
@@ -109,7 +102,6 @@ describe('AwsRollbackFunction', () => {
               Qualifier: '4711',
             })
           ).to.equal(true);
-          expect(consoleLogStub.called).to.equal(true);
           expect(result).to.deep.equal({ function: 'hello' });
         });
       });
@@ -141,7 +133,6 @@ describe('AwsRollbackFunction', () => {
               Qualifier: '4711',
             })
           ).to.equal(true);
-          expect(consoleLogStub.called).to.equal(true);
         });
       });
     });
@@ -172,7 +163,6 @@ describe('AwsRollbackFunction', () => {
               Qualifier: '4711',
             })
           ).to.equal(true);
-          expect(consoleLogStub.called).to.equal(true);
         });
       });
     });
@@ -215,7 +205,6 @@ describe('AwsRollbackFunction', () => {
             ZipFile: zipBuffer,
           })
         ).to.equal(true);
-        expect(consoleLogStub.called).to.equal(true);
       });
     });
   });
